@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SYD Spices | Pure · Natural · Authentic Indian Whole Spices</title>
+  <meta name="description" content="SYD Spices (Spice Your Dish) - Handpicked whole spices from Unjha, Gujarat, slowly milled in small batches with zero fillers or preservatives.">
+  <meta name="theme-color" content="#F7F3EB">
+
+  <!-- Google Fonts Preconnect -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Minimal Header (Transparent overlay on Hero) -->
+  <header class="site-header" id="header">
+    <div class="container">
+      <div class="header-inner">
+        
+        <!-- Brand -->
+        <a href="#" class="brand" aria-label="SYD Spices">
+          <img src="assets/main logo .png" alt="SYD Spices Logo" class="brand-logo">
+          <span class="brand-name">SYD SPICES</span>
+        </a>
+
+        <!-- Desktop Navigation -->
+        <nav class="nav-links" aria-label="Main Navigation">
+          <a href="#collection" class="nav-item">Collection</a>
+          <a href="#difference" class="nav-item">The SYD Difference</a>
+          <a href="#process" class="nav-item">Our Process</a>
+          <a href="#recipes" class="nav-item">Recipes</a>
+          <a href="#contact" class="nav-item">Contact</a>
+        </nav>
+
+        <!-- Actions -->
+        <div class="header-actions">
+          <button class="btn-bag" id="cart-toggle" aria-label="Open Shopping Bag">
+            <span>Bag</span>
+            <span class="bag-count" id="bag-count">1</span>
+          </button>
+
+          <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle Menu">
+            ☰
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Drawer Menu -->
+  <nav class="mobile-nav-menu" id="mobile-nav-menu" aria-label="Mobile Navigation">
+    <a href="#collection" class="nav-item mobile-item">Collection</a>
+    <a href="#difference" class="nav-item mobile-item">The SYD Difference</a>
+    <a href="#process" class="nav-item mobile-item">Our Process</a>
+    <a href="#recipes" class="nav-item mobile-item">Recipes</a>
+    <a href="#contact" class="nav-item mobile-item">Contact</a>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main>
+    <!-- SECTION 1: CINEMATIC BACKGROUND SLIDING HERO -->
+    <section class="hero-slider-section" id="hero-slider" aria-roledescription="carousel" aria-label="Featured Spices Showcase">
+      <div class="hero-slider" id="slider-track">
+
+        <!-- SLIDE 1: Whole Spices & Purity Promise -->
+        <div class="hero-slide active" data-index="0" role="group" aria-roledescription="slide" aria-label="1 of 3">
+          <div class="slide-bg" style="background-image: url('assets/hero_spices.jpg');"></div>
+          <div class="slide-overlay"></div>
+          <div class="container">
+            <div class="slide-content-wrap">
+              <span class="slide-eyebrow">✦ Pure · Natural · Authentic</span>
+              <h1 class="slide-title">
+                Not Just A Spice.<br>
+                <em>It’s Purity. It’s SYD.</em>
+              </h1>
+              <p class="slide-desc">
+                Real flavour begins with real spices. We hand-select premium whole spices from Unjha, Gujarat, and slow-grind them in small batches with zero fillers or preservatives.
+              </p>
+              <div class="slide-actions">
+                <a href="#collection" class="btn-slider-primary">
+                  <span>Explore Signature Collection</span>
+                  <span>&rarr;</span>
+                </a>
+                <a href="#difference" class="btn-slider-ghost">
+                  <span>The SYD Difference</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDE 2: Signature Red Chilli & Garam Masala -->
+        <div class="hero-slide" data-index="1" role="group" aria-roledescription="slide" aria-label="2 of 3">
+          <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=1920&q=85&auto=format&fit=crop');"></div>
+          <div class="slide-overlay"></div>
+          <div class="container">
+            <div class="slide-content-wrap">
+              <span class="slide-eyebrow">✦ Slow Cold-Ground · Essential Oils Intact</span>
+              <h2 class="slide-title">
+                Bold Colour. Rich Aroma.<br>
+                <em>Authentic Indian Spice.</em>
+              </h2>
+              <p class="slide-desc">
+                From our vibrant Premium Red Chilli to our aromatic Garam Masala and secret Magic Blend, experience pure culinary depth in every single pinch.
+              </p>
+              <div class="slide-actions">
+                <a href="#collection" class="btn-slider-primary">
+                  <span>Shop Signature Blends</span>
+                  <span>&rarr;</span>
+                </a>
+                <a href="#process" class="btn-slider-ghost">
+                  <span>Discover Our Process</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDE 3: Single Origin Unjha Heritage -->
+        <div class="hero-slide" data-index="2" role="group" aria-roledescription="slide" aria-label="3 of 3">
+          <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1532336414038-cf19250c5757?w=1920&q=85&auto=format&fit=crop');"></div>
+          <div class="slide-overlay"></div>
+          <div class="container">
+            <div class="slide-content-wrap">
+              <span class="slide-eyebrow">✦ Sourced Direct From Unjha, Gujarat</span>
+              <h2 class="slide-title">
+                Your Recipe.<br>
+                <em>Our Pure Spice.</em>
+              </h2>
+              <p class="slide-desc">
+                We take every pack seriously because it becomes part of the food you serve your loved ones. No shortcuts. No compromise. Just pure spice.
+              </p>
+              <div class="slide-actions">
+                <a href="#collection" class="btn-slider-primary">
+                  <span>Shop Collection</span>
+                  <span>&rarr;</span>
+                </a>
+                <a href="#difference" class="btn-slider-ghost">
+                  <span>Why It Matters</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Minimal Slider Controls Bar (Bottom) -->
+      <div class="slider-bottom-bar">
+        <div class="container">
+          <div class="slider-bottom-inner">
+            
+            <!-- Indicators & Counter -->
+            <div class="slider-nav-indicators">
+              <div class="slider-counter">
+                <span class="current-num" id="current-slide-num">01</span> / 03
+              </div>
+
+              <!-- Animated Progress Bars -->
+              <div class="progress-track" role="tablist">
+                <div class="progress-bar-item active" data-slide="0" role="tab" aria-label="Slide 1">
+                  <div class="progress-bar-fill"></div>
+                </div>
+                <div class="progress-bar-item" data-slide="1" role="tab" aria-label="Slide 2">
+                  <div class="progress-bar-fill"></div>
+                </div>
+                <div class="progress-bar-item" data-slide="2" role="tab" aria-label="Slide 3">
+                  <div class="progress-bar-fill"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Arrows -->
+            <div class="slider-arrows">
+              <button class="arrow-btn" id="prev-slide-btn" aria-label="Previous Slide">←</button>
+              <button class="arrow-btn" id="next-slide-btn" aria-label="Next Slide">→</button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: THE SYD DIFFERENCE (Exact 1:1 Pixel-to-Pixel Reproduction) -->
+    <section class="syd-difference-section" id="difference">
+      
+      <!-- Top-Left Botanical Line-Art Leaf Watermark -->
+      <svg class="bg-leaf-top-left" viewBox="0 0 200 200" fill="none" stroke="#A69485" stroke-width="1.2">
+        <path d="M10 10C30 40 80 50 120 40C100 80 60 110 20 120" stroke-linecap="round"/>
+        <path d="M40 30C60 20 85 25 95 35C80 50 60 45 40 30Z"/>
+        <path d="M65 42C90 40 115 50 125 65C105 75 80 65 65 42Z"/>
+        <path d="M30 65C45 55 70 60 75 75C60 85 45 80 30 65Z"/>
+      </svg>
+
+      <!-- Bottom-Right Botanical Line-Art Leaf Watermark -->
+      <svg class="bg-leaf-bottom-right" viewBox="0 0 200 200" fill="none" stroke="#A69485" stroke-width="1.2">
+        <path d="M190 190C160 150 110 140 70 150C90 110 130 80 170 70" stroke-linecap="round"/>
+        <path d="M150 160C130 170 105 165 95 155C110 140 130 145 150 160Z"/>
+        <path d="M125 148C100 150 75 140 65 125C85 115 110 125 125 148Z"/>
+        <path d="M160 125C145 135 120 130 115 115C130 105 145 110 160 125Z"/>
+      </svg>
+
+      <div class="container">
+        
+        <!-- Top Stage: Narrative + Visual Composition -->
+        <div class="diff-stage-grid">
+          
+          <!-- Left Content Block -->
+          <div class="diff-content-block">
+            
+            <!-- Eyebrow -->
+            <div class="diff-eyebrow-container">
+              <span class="eyebrow-line-arrow">
+                <svg width="24" height="10" viewBox="0 0 24 10" fill="none">
+                  <line x1="0" y1="5" x2="18" y2="5" stroke="#C45926" stroke-width="1.5"/>
+                  <polyline points="14,1 19,5 14,9" stroke="#C45926" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <span class="eyebrow-text">THE SYD DIFFERENCE</span>
+              <span class="eyebrow-line-arrow">
+                <svg width="24" height="10" viewBox="0 0 24 10" fill="none">
+                  <line x1="6" y1="5" x2="24" y2="5" stroke="#C45926" stroke-width="1.5"/>
+                  <polyline points="10,1 5,5 10,9" stroke="#C45926" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </div>
+
+            <!-- Main Headline (Strictly 2 Lines) -->
+            <h2 class="diff-main-headline">
+              <span class="headline-line-1">Because What Goes Into</span>
+              <span class="headline-line-2 headline-highlight">Your Food Matters.</span>
+            </h2>
+
+            <!-- Philosophy Statement -->
+            <div class="diff-quote-block">
+              <p class="diff-quote-text">
+                A great spice isn’t created by adding more.<br>
+                It’s created by starting with better.
+              </p>
+            </div>
+
+            <!-- Lead Description -->
+            <p class="diff-lead-paragraph">
+              At SYD, we begin with carefully selected whole spices and process them with care to preserve their natural character, aroma and taste. No shortcuts. No compromise. Just pure spice.
+            </p>
+
+            <!-- Action & Seal Lockup -->
+            <div class="diff-action-cluster">
+              <a href="#process" class="btn-discover-process">
+                <span>Discover Our Process</span>
+                <span class="btn-arrow-icon">&rarr;</span>
+              </a>
+
+              <div class="diff-seal-lockup">
+                <svg class="seal-icon-svg" width="34" height="34" viewBox="0 0 34 34" fill="none">
+                  <!-- Green Botanical Leaf -->
+                  <path d="M10 26C10 26 20 24 26 13C26 7 22 3 17 3C11 3 5 8 5 16C5 22 10 26 10 26Z" stroke="#3D6843" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                  <!-- Terracotta Center Stem -->
+                  <path d="M5 30L16 17" stroke="#C45926" stroke-width="1.8" stroke-linecap="round"/>
+                  <path d="M16 17C19 15 22 15 25 12" stroke="#3D6843" stroke-width="1.6" stroke-linecap="round"/>
+                  <path d="M12 21C14 20 16 20 19 17" stroke="#3D6843" stroke-width="1.6" stroke-linecap="round"/>
+                  <!-- Golden Wheat Nodes -->
+                  <circle cx="26" cy="7" r="1.5" fill="#D6972B" />
+                  <circle cx="21" cy="4" r="1.5" fill="#D6972B" />
+                  <circle cx="29" cy="11" r="1.5" fill="#D6972B" />
+                </svg>
+                <div class="seal-tagline-text">
+                  <em>Pure Ingredients.</em>
+                  <em>Authentic Flavour.</em>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Right Visual: Authentic Spice Composition (assets/about.png) -->
+          <div class="diff-visual-block">
+            <img src="assets/about.png" alt="Pure Whole Spices in Rustic Wooden Bowls" class="diff-composition-img">
+          </div>
+
+        </div>
+
+        <!-- Bottom 4 Feature Pillars -->
+        <div class="diff-pillars-section">
+          <div class="diff-pillars-grid">
+
+            <!-- Pillar 01 -->
+            <div class="pillar-column">
+              <div class="pillar-header-wrap">
+                <div class="pillar-badge">
+                  <!-- 3-leaf sprout icon -->
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C45926" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22V10"></path>
+                    <path d="M12 14C8 14 6 11 6 8C10 8 12 11 12 14Z"></path>
+                    <path d="M12 10C16 10 18 7 18 4C14 4 12 7 12 10Z"></path>
+                  </svg>
+                </div>
+                <div class="pillar-title-block">
+                  <span class="pillar-order-num">01</span>
+                  <h3 class="pillar-main-title">WHOLE SPICES</h3>
+                </div>
+              </div>
+              <div class="pillar-divider-line"></div>
+              <p class="pillar-description-text">
+                We begin with carefully selected whole spices rather than relying on fillers or unnecessary ingredients.
+              </p>
+            </div>
+
+            <!-- Pillar 02 -->
+            <div class="pillar-column">
+              <div class="pillar-header-wrap">
+                <div class="pillar-badge">
+                  <!-- Mortar & Pestle Grinding Icon -->
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C45926" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 11C4 16 7.5 19 12 19C16.5 19 20 16 20 11H4Z"></path>
+                    <path d="M16 4L11 11"></path>
+                    <path d="M3 11H21"></path>
+                    <path d="M7 19H17"></path>
+                  </svg>
+                </div>
+                <div class="pillar-title-block">
+                  <span class="pillar-order-num">02</span>
+                  <h3 class="pillar-main-title">CAREFUL PROCESSING</h3>
+                </div>
+              </div>
+              <div class="pillar-divider-line"></div>
+              <p class="pillar-description-text">
+                Our grinding approach is designed to help preserve the natural aroma and character of the spice.
+              </p>
+            </div>
+
+            <!-- Pillar 03 -->
+            <div class="pillar-column">
+              <div class="pillar-header-wrap">
+                <div class="pillar-badge">
+                  <!-- Small Batch Leaf Twig Icon -->
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C45926" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22V9"></path>
+                    <path d="M12 13C8 13 6 10 6 7C10 7 12 10 12 13Z"></path>
+                    <path d="M12 9C16 9 18 6 18 3C14 3 12 6 12 9Z"></path>
+                    <circle cx="12" cy="5" r="1.5" fill="#C45926" />
+                  </svg>
+                </div>
+                <div class="pillar-title-block">
+                  <span class="pillar-order-num">03</span>
+                  <h3 class="pillar-main-title">SMALL BATCH</h3>
+                </div>
+              </div>
+              <div class="pillar-divider-line"></div>
+              <p class="pillar-description-text">
+                When spices are processed in smaller batches, there is greater attention to consistency, freshness and quality.
+              </p>
+            </div>
+
+            <!-- Pillar 04 -->
+            <div class="pillar-column">
+              <div class="pillar-header-wrap">
+                <div class="pillar-badge">
+                  <!-- Hand Holding Leaf Care Icon -->
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C45926" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 9C18 5 15 2 11 2C7 2 4 5 4 9C4 13 8 16 11 16"></path>
+                    <path d="M11 2V16"></path>
+                    <path d="M2 17C4.5 15.5 7.5 15.5 10 17L13 15.5C15.5 14 18.5 14 21 16L18 19C15 21 10 21 7 19L2 17Z"></path>
+                  </svg>
+                </div>
+                <div class="pillar-title-block">
+                  <span class="pillar-order-num">04</span>
+                  <h3 class="pillar-main-title">MADE WITH CARE</h3>
+                </div>
+              </div>
+              <div class="pillar-divider-line"></div>
+              <p class="pillar-description-text">
+                Every batch receives attention to quality, colour, aroma and taste.
+              </p>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 3: SIGNATURE COLLECTION (03 — OUR SIGNATURE COLLECTION) -->
+    <section class="collection-section" id="collection">
+      <div class="container">
+
+        <!-- Top Header Grid -->
+        <div class="collection-header-grid">
+          
+          <!-- Left Header Content -->
+          <div class="collection-header-left">
+            <div class="section-eyebrow-wrap">
+              <span class="eyebrow-arrow">&rarr;</span>
+              <span class="eyebrow-num">03</span>
+              <span class="eyebrow-sep">&mdash;</span>
+              <span class="eyebrow-title">OUR SIGNATURE COLLECTION</span>
+              <span class="eyebrow-line-tail"></span>
+            </div>
+
+            <h2 class="collection-main-headline">
+              <span class="headline-part-1">Three Spices.</span>
+              <span class="headline-part-2">One SYD Promise.</span>
+            </h2>
+
+            <p class="collection-lead-desc">
+              From everyday cooking to special family recipes, our signature collection is created to bring purity, aroma and authentic flavour to your kitchen.
+            </p>
+          </div>
+
+          <!-- Right Floating Script -->
+          <div class="collection-header-right">
+            <div class="hand-script-stamp">
+              <span class="script-line-1">Real Spices</span>
+              <span class="script-line-2">Real Flavour</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 3 Product Cards Grid -->
+        <div class="products-triplet-grid">
+          
+          <!-- Card 1: Magic Blend -->
+          <div class="product-showcase-card">
+            <div class="product-arch-visual">
+              <img src="assets/magicbland.png" alt="SYD Magic Blend Premium Spice Blend" class="product-card-img">
+            </div>
+            <div class="product-details-wrap">
+              <h3 class="product-card-title">Magic Blend</h3>
+              <p class="product-card-desc">
+                A carefully crafted blend designed to add depth, aroma and flavour to everyday dishes.
+              </p>
+              <div class="product-card-script">
+                One Blend. Endless Possibilities.
+              </div>
+              <a href="#cart-drawer" class="btn-product-shop" onclick="event.preventDefault(); document.getElementById('cart-drawer').classList.add('active'); document.getElementById('drawer-backdrop').classList.add('active');">
+                <span>Shop Now</span>
+                <span class="btn-arrow">&rarr;</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Card 2: Premium Red Chilli Powder -->
+          <div class="product-showcase-card">
+            <div class="product-arch-visual">
+              <img src="assets/chilli.png" alt="SYD Premium Red Chilli Powder" class="product-card-img">
+            </div>
+            <div class="product-details-wrap">
+              <h3 class="product-card-title">Premium Red Chilli Powder</h3>
+              <p class="product-card-desc">
+                Made from carefully selected red chillies, dried and ground to bring natural chili character to your cooking.
+              </p>
+              <div class="product-card-script">
+                Bold Colour. Rich Aroma. Authentic Spice.
+              </div>
+              <a href="#cart-drawer" class="btn-product-shop" onclick="event.preventDefault(); document.getElementById('cart-drawer').classList.add('active'); document.getElementById('drawer-backdrop').classList.add('active');">
+                <span>Shop Now</span>
+                <span class="btn-arrow">&rarr;</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Card 3: Premium Garam Masala -->
+          <div class="product-showcase-card">
+            <div class="product-arch-visual">
+              <img src="assets/garammasala.png" alt="SYD Premium Garam Masala" class="product-card-img">
+            </div>
+            <div class="product-details-wrap">
+              <h3 class="product-card-title">Premium Garam Masala</h3>
+              <p class="product-card-desc">
+                Aromatic, warm and beautifully balanced - our garam masala is crafted to bring that unmistakable depth to Indian dishes.
+              </p>
+              <div class="product-card-script">
+                The Heart of Indian Flavour.
+              </div>
+              <a href="#cart-drawer" class="btn-product-shop" onclick="event.preventDefault(); document.getElementById('cart-drawer').classList.add('active'); document.getElementById('drawer-backdrop').classList.add('active');">
+                <span>Shop Now</span>
+                <span class="btn-arrow">&rarr;</span>
+              </a>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Collection Bottom Hairline Divider & Slogan -->
+        <div class="collection-slogan-wrap">
+          <div class="slogan-divider">
+            <span class="slogan-line"></span>
+            <svg class="slogan-leaf-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C45926" stroke-width="1.8">
+              <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" stroke-linecap="round"/>
+            </svg>
+            <span class="slogan-line"></span>
+          </div>
+          <div class="slogan-text">
+            TOGETHER, THEY MAKE EVERY DISH A LITTLE MORE <span class="syd-brand-orange">SYD.</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 4: WHY SMALL BATCH? (04 — WHY SMALL BATCH?) -->
+    <section class="small-batch-section" id="small-batch">
+      
+      <!-- Subtle dark botanical overlay watermark -->
+      <svg class="bg-dark-leaf-left" viewBox="0 0 240 240" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1.2">
+        <path d="M20 20C50 70 120 80 180 60C150 120 90 170 30 180" stroke-linecap="round"/>
+        <path d="M60 45C90 30 130 35 145 50C120 70 90 65 60 45Z"/>
+      </svg>
+
+      <div class="small-batch-container">
+        
+        <!-- Left Column Content -->
+        <div class="small-batch-content">
+          <div class="section-eyebrow-wrap dark-mode">
+            <span class="eyebrow-arrow">&rarr;</span>
+            <span class="eyebrow-num">04</span>
+            <span class="eyebrow-sep">&mdash;</span>
+            <span class="eyebrow-title">WHY SMALL BATCH?</span>
+            <span class="eyebrow-line-tail"></span>
+          </div>
+
+          <h2 class="small-batch-headline">
+            <span class="headline-light">Small Batch.</span>
+            <span class="headline-terracotta">Big Difference.</span>
+          </h2>
+
+          <p class="small-batch-desc">
+            When spices are processed with care in smaller batches, there is greater attention to consistency, freshness and quality. Our approach allows us to focus on what really matters:
+          </p>
+
+          <!-- 3 Core Attributes Pills -->
+          <div class="batch-attributes-row">
+            <div class="batch-attr-item">
+              <div class="attr-icon-wrap">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C45926" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path>
+                  <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path>
+                </svg>
+              </div>
+              <span class="attr-label">Aroma</span>
+            </div>
+
+            <div class="batch-attr-item">
+              <div class="attr-icon-wrap">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C45926" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 14h16c0 4.4-3.6 8-8 8s-8-3.6-8-8z"></path>
+                  <path d="M7 10c0-2 2-3 2-5"></path>
+                  <path d="M12 10c0-2 2-3 2-5"></path>
+                  <path d="M17 10c0-2 2-3 2-5"></path>
+                </svg>
+              </div>
+              <span class="attr-label">Flavour</span>
+            </div>
+
+            <div class="batch-attr-item">
+              <div class="attr-icon-wrap">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C45926" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22v-9"></path>
+                  <path d="M12 13c-3.5 0-6-2.5-6-6 3.5 0 6 2.5 6 6z"></path>
+                  <path d="M12 13c3.5 0 6-2.5 6-6-3.5 0-6 2.5-6 6z"></path>
+                  <circle cx="12" cy="4" r="1.5" fill="#C45926"></circle>
+                </svg>
+              </div>
+              <span class="attr-label">Freshness</span>
+            </div>
+          </div>
+
+          <!-- Action Button -->
+          <div class="small-batch-actions">
+            <a href="#process" class="btn-read-more">
+              <span>Read More</span>
+              <span class="btn-arrow">&rarr;</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Right Script Stamp -->
+        <div class="small-batch-script-stamp">
+          <span class="script-purity-1">Taste the Difference.</span>
+          <span class="script-purity-2">Feel the Purity.</span>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 5: FROM SPICE TO PACK (05 — FROM SPICE TO PACK) -->
+    <section class="process-flow-section" id="process">
+      
+      <!-- Top-Right Botanical Line Art Watermark -->
+      <svg class="bg-process-leaf-right" viewBox="0 0 220 220" fill="none" stroke="#A69485" stroke-width="1.2">
+        <path d="M210 210C180 160 120 150 70 160C100 110 150 70 200 60" stroke-linecap="round"/>
+        <path d="M160 170C140 180 110 175 100 165C120 150 140 155 160 170Z"/>
+      </svg>
+
+      <!-- Bottom-Left Botanical Watermark -->
+      <svg class="bg-process-leaf-left" viewBox="0 0 220 220" fill="none" stroke="#A69485" stroke-width="1.2">
+        <path d="M10 10C40 60 100 70 150 60C120 110 70 150 20 160" stroke-linecap="round"/>
+        <path d="M60 50C80 40 110 45 120 55C100 70 80 65 60 50Z"/>
+      </svg>
+
+      <div class="container">
+        
+        <!-- Header Row -->
+        <div class="process-header-grid">
+          
+          <div class="process-header-left">
+            <div class="section-eyebrow-wrap">
+              <span class="eyebrow-arrow">&rarr;</span>
+              <span class="eyebrow-num">05</span>
+              <span class="eyebrow-sep">&mdash;</span>
+              <span class="eyebrow-title">FROM SPICE TO PACK</span>
+              <span class="eyebrow-line-tail"></span>
+            </div>
+
+            <h2 class="process-main-headline">
+              Made The Right Way.
+            </h2>
+          </div>
+
+          <div class="process-header-right">
+            <p class="process-lead-desc">
+              From careful sourcing to hygienic packing, every step is guided by our commitment to purity, quality and authentic flavour.
+            </p>
+          </div>
+
+        </div>
+
+        <!-- 6 Steps Horizontal Flow -->
+        <div class="process-steps-track">
+          
+          <!-- Step 01 -->
+          <div class="process-step-node">
+            <div class="step-circle-frame">
+              <img src="assets/step_01_sourced.png" alt="01 Carefully Sourced Whole Spices" class="step-circle-img">
+            </div>
+            <div class="step-content-box">
+              <span class="step-idx-num">01</span>
+              <h4 class="step-title-text">CAREFULLY SOURCED</h4>
+              <p class="step-desc-text">We focus on selecting quality spices from reliable sources.</p>
+            </div>
+          </div>
+
+          <div class="step-flow-arrow">
+            <svg width="22" height="12" viewBox="0 0 22 12" fill="none">
+              <line x1="0" y1="6" x2="18" y2="6" stroke="#C45926" stroke-width="1.5"/>
+              <polyline points="14,2 19,6 14,10" stroke="#C45926" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+
+          <!-- Step 02 -->
+          <div class="process-step-node">
+            <div class="step-circle-frame">
+              <img src="assets/step_02_handpicked.png" alt="02 Handpicked & Checked Spices" class="step-circle-img">
+            </div>
+            <div class="step-content-box">
+              <span class="step-idx-num">02</span>
+              <h4 class="step-title-text">HANDPICKED & CHECKED</h4>
+              <p class="step-desc-text">Spices are carefully inspected for quality and consistency.</p>
+            </div>
+          </div>
+
+          <div class="step-flow-arrow">
+            <svg width="22" height="12" viewBox="0 0 22 12" fill="none">
+              <line x1="0" y1="6" x2="18" y2="6" stroke="#C45926" stroke-width="1.5"/>
+              <polyline points="14,2 19,6 14,10" stroke="#C45926" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+
+          <!-- Step 03 -->
+          <div class="process-step-node">
+            <div class="step-circle-frame">
+              <img src="assets/step_03_cleaned.png" alt="03 Cleaned Whole Spices" class="step-circle-img">
+            </div>
+            <div class="step-content-box">
+              <span class="step-idx-num">03</span>
+              <h4 class="step-title-text">CLEANED</h4>
+              <p class="step-desc-text">The selected spices are cleaned before processing.</p>
+            </div>
+          </div>
+
+          <div class="step-flow-arrow">
+            <svg width="22" height="12" viewBox="0 0 22 12" fill="none">
+              <line x1="0" y1="6" x2="18" y2="6" stroke="#C45926" stroke-width="1.5"/>
+              <polyline points="14,2 19,6 14,10" stroke="#C45926" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+
+          <!-- Step 04 -->
+          <div class="process-step-node">
+            <div class="step-circle-frame">
+              <img src="assets/step_04_ground.png" alt="04 Carefully Ground Spices" class="step-circle-img">
+            </div>
+            <div class="step-content-box">
+              <span class="step-idx-num">04</span>
+              <h4 class="step-title-text">CAREFULLY GROUND</h4>
+              <p class="step-desc-text">Our grinding process is designed to preserve the natural character of the spice.</p>
+            </div>
+          </div>
+
+          <div class="step-flow-arrow">
+            <svg width="22" height="12" viewBox="0 0 22 12" fill="none">
+              <line x1="0" y1="6" x2="18" y2="6" stroke="#C45926" stroke-width="1.5"/>
+              <polyline points="14,2 19,6 14,10" stroke="#C45926" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+
+          <!-- Step 05 -->
+          <div class="process-step-node">
+            <div class="step-circle-frame">
+              <img src="assets/step_05_quality.png" alt="05 Quality Checked" class="step-circle-img">
+            </div>
+            <div class="step-content-box">
+              <span class="step-idx-num">05</span>
+              <h4 class="step-title-text">QUALITY CHECKED</h4>
+              <p class="step-desc-text">Every batch receives attention to quality, aroma, colour and taste.</p>
+            </div>
+          </div>
+
+          <div class="step-flow-arrow">
+            <svg width="22" height="12" viewBox="0 0 22 12" fill="none">
+              <line x1="0" y1="6" x2="18" y2="6" stroke="#C45926" stroke-width="1.5"/>
+              <polyline points="14,2 19,6 14,10" stroke="#C45926" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+
+          <!-- Step 06 -->
+          <div class="process-step-node">
+            <div class="step-circle-frame">
+              <img src="assets/step_06_packed.png" alt="06 Hygienically Packed" class="step-circle-img">
+            </div>
+            <div class="step-content-box">
+              <span class="step-idx-num">06</span>
+              <h4 class="step-title-text">HYGIENICALLY PACKED</h4>
+              <p class="step-desc-text">The finished spice is packed with care so it can reach your kitchen in good condition.</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Bottom Quote Lockup -->
+        <div class="process-bottom-slogan">
+          <div class="process-slogan-title">FROM WHOLE SPICE TO YOUR KITCHEN.</div>
+          <div class="process-slogan-highlight">EVERY STEP MATTERS.</div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- SITE FOOTER -->
+  <footer class="site-footer" id="contact">
+    <!-- Top Newsletter Row -->
+    <div class="footer-newsletter-wrap">
+      <div class="container">
+        <div class="footer-newsletter-inner">
+          <div class="newsletter-text-col">
+            <span class="newsletter-eyebrow">✦ The SYD Kitchen Club</span>
+            <h3 class="newsletter-title">A Pinch of Purity. Straight to Your Inbox.</h3>
+            <p class="newsletter-desc">Subscribe to receive authentic family recipes, seasonal spice pairing tips, and harvest updates.</p>
+          </div>
+          <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for subscribing to SYD Spices!'); this.reset();">
+            <div class="newsletter-input-group">
+              <input type="email" placeholder="Enter your email address" class="newsletter-input" required>
+              <button type="submit" class="btn-newsletter-submit">
+                <span>Join Club</span>
+                <span class="btn-arrow">&rarr;</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Footer Grid -->
+    <div class="footer-main-wrap">
+      <!-- Watermark Botanical Leaves -->
+      <svg class="footer-bg-leaf-left" viewBox="0 0 260 260" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1.2">
+        <path d="M20 20C60 80 140 90 200 70C170 140 100 200 30 210" stroke-linecap="round"/>
+        <path d="M70 50C100 35 150 40 170 60C140 85 100 75 70 50Z"/>
+      </svg>
+      <svg class="footer-bg-leaf-right" viewBox="0 0 260 260" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1.2">
+        <path d="M240 240C200 180 120 170 60 190C90 120 160 60 230 50" stroke-linecap="round"/>
+        <path d="M190 210C160 225 110 220 90 200C120 175 160 185 190 210Z"/>
+      </svg>
+
+      <div class="container">
+        <div class="footer-grid">
+          
+          <!-- Column 1: Grand Brand Info with Big Logo -->
+          <div class="footer-col footer-brand-col">
+            <div class="footer-brand-lockup">
+              <img src="assets/main logo .png" alt="SYD Spices Master Logo" class="footer-big-logo">
+              <div class="footer-brand-text">
+                <span class="footer-brand-title">SYD SPICES</span>
+                <span class="footer-brand-tagline">SPICE YOUR DISH</span>
+              </div>
+            </div>
+            <p class="footer-brand-bio">
+              Handpicked whole spices sourced directly from Unjha, Gujarat &mdash; slowly stone-milled in small batches with zero fillers, artificial dyes, or preservatives. Real spice for authentic cooking.
+            </p>
+            <div class="footer-trust-pills">
+              <span class="trust-pill">🌿 100% Pure & Natural</span>
+              <span class="trust-pill">⚡ Cold Stone Ground</span>
+              <span class="trust-pill">📍 Unjha Origin</span>
+            </div>
+          </div>
+
+          <!-- Column 2: Signature Collection -->
+          <div class="footer-col">
+            <h4 class="footer-col-title">Signature Collection</h4>
+            <ul class="footer-links-list">
+              <li><a href="#collection" class="footer-link">Magic Blend Masala</a></li>
+              <li><a href="#collection" class="footer-link">Premium Red Chilli Powder</a></li>
+              <li><a href="#collection" class="footer-link">Premium Garam Masala</a></li>
+              <li><a href="#collection" class="footer-link">Whole Spices Selection</a></li>
+              <li><a href="#collection" class="footer-link">Artisanal Gift Box</a></li>
+            </ul>
+          </div>
+
+          <!-- Column 3: Craft & Purity -->
+          <div class="footer-col">
+            <h4 class="footer-col-title">Our Purity Standard</h4>
+            <ul class="footer-links-list">
+              <li><a href="#difference" class="footer-link">The SYD Difference</a></li>
+              <li><a href="#process" class="footer-link">6-Step Processing Flow</a></li>
+              <li><a href="#small-batch" class="footer-link">Why Small Batch Grinding?</a></li>
+              <li><a href="#difference" class="footer-link">Unjha, Gujarat Heritage</a></li>
+              <li><a href="#recipes" class="footer-link">Purity & Lab Testing</a></li>
+            </ul>
+          </div>
+
+          <!-- Column 4: Contact & Origin -->
+          <div class="footer-col footer-contact-col">
+            <h4 class="footer-col-title">Origin & Support</h4>
+            <div class="footer-contact-item">
+              <span class="contact-icon">📍</span>
+              <div class="contact-detail">
+                <strong>Spice Park Facility</strong>
+                <p>Gala No. 12, Spice Park, Unjha - 384170, Gujarat, India</p>
+              </div>
+            </div>
+            <div class="footer-contact-item">
+              <span class="contact-icon">✉️</span>
+              <div class="contact-detail">
+                <strong>Customer Inquiries</strong>
+                <a href="mailto:info@sydspices.com" class="footer-contact-link">info@sydspices.com</a>
+              </div>
+            </div>
+            <div class="footer-contact-item">
+              <span class="contact-icon">📞</span>
+              <div class="contact-detail">
+                <strong>Customer Care Hotline</strong>
+                <a href="tel:+919876543210" class="footer-contact-link">+91 98765 43210</a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Bottom Bar -->
+    <div class="footer-bottom-bar">
+      <div class="container">
+        <div class="footer-bottom-inner">
+          <div class="footer-copyright">
+            &copy; 2026 <strong>SYD SPICES</strong>. All rights reserved.
+          </div>
+          <div class="footer-legal-links">
+            <a href="#" class="legal-link">Privacy Policy</a>
+            <span class="legal-sep">&bull;</span>
+            <a href="#" class="legal-link">Terms</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Slideout Shopping Bag Drawer -->
+  <div class="drawer-backdrop" id="drawer-backdrop"></div>
+  <aside class="cart-drawer" id="cart-drawer" aria-label="Shopping Bag">
+    <div class="drawer-header">
+      <h2 class="drawer-title">Your Bag</h2>
+      <button class="drawer-close" id="drawer-close" aria-label="Close Bag">&times;</button>
+    </div>
+
+    <div class="drawer-body" id="drawer-body">
+      <div class="drawer-item">
+        <img src="assets/hero_spices.jpg" alt="Red Chilli Powder" class="drawer-item-img">
+        <div class="drawer-item-info">
+          <div class="drawer-item-name">Premium Red Chilli Powder (250g)</div>
+          <div class="drawer-item-price">₹185.00</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="drawer-footer">
+      <div class="drawer-total">
+        <span>Subtotal</span>
+        <span>₹185.00</span>
+      </div>
+      <button class="btn-checkout" onclick="alert('Checkout connected!')">Proceed to Checkout</button>
+    </div>
+  </aside>
+
+  <!-- Slider & Drawer JavaScript -->
+  <script src="script.js"></script>
+</body>
+</html>
