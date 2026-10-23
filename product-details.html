@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Details | SYD Spices</title>
+  <meta name="description" content="Discover pure single-origin Indian spices and handcrafted signature blends from SYD Spices. Sourced directly from Unjha, Gujarat.">
+  <meta name="theme-color" content="#F7F3EB">
+
+  <!-- Google Fonts Preconnect -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Minimal Header -->
+  <header class="site-header" id="header">
+    <div class="container">
+      <div class="header-inner">
+        
+        <!-- Brand -->
+        <a href="index.html" class="brand" aria-label="SYD Spices Home">
+          <img src="assets/main logo .png" alt="SYD Spices Logo" class="brand-logo">
+          <span class="brand-name">SYD SPICES</span>
+        </a>
+
+        <!-- Desktop Navigation -->
+        <nav class="nav-links" aria-label="Main Navigation">
+          <a href="index.html" class="nav-item">Home</a>
+          <a href="about.html" class="nav-item">About Us</a>
+          <a href="products.html" class="nav-item active">Our Spices</a>
+          <a href="quality.html" class="nav-item">Quality</a>
+          <a href="inspiration.html" class="nav-item">Inspiration</a>
+          <a href="contact.html" class="nav-item">Contact</a>
+        </nav>
+
+        <!-- Actions -->
+        <div class="header-actions">
+          <button class="btn-bag" id="cart-toggle" aria-label="Open Shopping Bag">
+            <span>Bag</span>
+            <span class="bag-count" id="bag-count">1</span>
+          </button>
+
+          <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle Menu">
+            ☰
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Drawer Menu -->
+  <nav class="mobile-nav-menu" id="mobile-nav-menu" aria-label="Mobile Navigation">
+    <a href="index.html" class="nav-item mobile-item">Home</a>
+    <a href="about.html" class="nav-item mobile-item">About Us</a>
+    <a href="products.html" class="nav-item mobile-item active">Our Spices</a>
+    <a href="quality.html" class="nav-item mobile-item">Quality</a>
+    <a href="inspiration.html" class="nav-item mobile-item">Inspiration</a>
+    <a href="contact.html" class="nav-item mobile-item">Contact</a>
+  </nav>
+
+  <!-- MAIN PRODUCT DETAILS -->
+  <main>
+    <section class="pdp-main-section">
+      <div class="container">
+        
+        <!-- Breadcrumbs -->
+        <nav class="pdp-breadcrumb" aria-label="Breadcrumb">
+          <a href="index.html">Home</a>
+          <span>/</span>
+          <a href="products.html">Our Spices</a>
+          <span>/</span>
+          <span class="current" id="pdp-bread-name">Magic Blend</span>
+        </nav>
+
+        <!-- 2-Column Product Layout -->
+        <div class="pdp-grid">
+          
+          <!-- Column 1: Gallery Visual Card -->
+          <div class="pdp-gallery-wrap">
+            <div class="pdp-main-image-card">
+              <span class="pdp-gallery-badge" id="pdp-badge">Bestseller</span>
+              <img src="assets/magicbland.png" alt="Spice Preview" class="pdp-main-img" id="pdp-img">
+              <div class="pdp-mandi-tag">
+                📍 Single-Origin &bull; Unjha APMC Mandi, Gujarat
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 2: Product Specifications & Purchase -->
+          <div class="pdp-info-col">
+            <div class="pdp-meta-kicker">
+              <span class="pdp-category" id="pdp-category">Signature Blend</span>
+              <div class="pdp-rating">
+                <span>★★★★★</span>
+                <span>4.9 (142 reviews)</span>
+              </div>
+            </div>
+
+            <h1 class="pdp-title" id="pdp-title">Magic Blend</h1>
+            <div class="pdp-script-tag" id="pdp-script">Master Secret Blend</div>
+
+            <!-- Price Row -->
+            <div class="pdp-price-wrap">
+              <span class="pdp-price-current" id="pdp-price">₹195</span>
+              <span class="pdp-price-strike" id="pdp-price-strike">₹240</span>
+              <span class="pdp-savings-badge" id="pdp-savings">Save 19%</span>
+              <span class="pdp-tax-note">Inclusive of all taxes</span>
+            </div>
+
+            <!-- Narrative Description -->
+            <p class="pdp-description-text" id="pdp-desc">
+              Our signature 16-spice balanced aromatic blend, master-crafted in small batches to elevate everyday curries, dals, gravies, and paneer dishes with fragrant, warm sweetness.
+            </p>
+
+            <!-- Pack Size Selection -->
+            <div class="pdp-pack-block">
+              <div class="pdp-pack-label">
+                <span>Select Pack Size</span>
+                <span style="font-weight: 500; text-transform: none; color: #8E8278;" id="pdp-active-weight-label">Selected: 250g Pouch</span>
+              </div>
+              <div class="pdp-pack-options" id="pdp-pack-options">
+                <button type="button" class="pdp-pack-btn" data-weight="100g" data-price="85" data-strike="105">
+                  <span class="pdp-pack-weight">100g</span>
+                  <span class="pdp-pack-price">₹85</span>
+                </button>
+                <button type="button" class="pdp-pack-btn active" data-weight="250g" data-price="195" data-strike="240">
+                  <span class="pdp-pack-weight">250g</span>
+                  <span class="pdp-pack-price">₹195</span>
+                </button>
+                <button type="button" class="pdp-pack-btn" data-weight="500g" data-price="360" data-strike="430">
+                  <span class="pdp-pack-weight">500g</span>
+                  <span class="pdp-pack-price">₹360</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Quantity & Actions -->
+            <div class="pdp-actions-row">
+              <div class="pdp-qty-wrap">
+                <button type="button" class="pdp-qty-btn" id="pdp-minus" aria-label="Decrease quantity">−</button>
+                <span class="pdp-qty-num" id="pdp-qty-val">1</span>
+                <button type="button" class="pdp-qty-btn" id="pdp-plus" aria-label="Increase quantity">+</button>
+              </div>
+
+              <button type="button" class="btn-pdp-add-bag" id="pdp-add-btn">
+                <span>Add to Shopping Bag</span>
+                <span>+</span>
+              </button>
+
+              <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer" class="btn-pdp-whatsapp" aria-label="Order on WhatsApp">
+                <span>💬</span>
+                <span>Order on WhatsApp</span>
+              </a>
+            </div>
+
+            <!-- Trust Icons Box -->
+            <div class="pdp-trust-box">
+              <div class="pdp-trust-item">
+                <span class="pdp-trust-icon">🚚</span>
+                <div>Free Shipping above ₹499</div>
+              </div>
+              <div class="pdp-trust-item">
+                <span class="pdp-trust-icon">❄️</span>
+                <div>Cold-Ground &lt;40°C</div>
+              </div>
+              <div class="pdp-trust-item">
+                <span class="pdp-trust-icon">🛡️</span>
+                <div>100% Zero Fillers</div>
+              </div>
+            </div>
+
+            <!-- Accordion Details -->
+            <div class="pdp-accordion-group">
+              
+              <div class="pdp-accordion-item active">
+                <button type="button" class="pdp-accordion-btn">
+                  <span>Culinary Notes &amp; Tasting Profile</span>
+                  <span class="pdp-accordion-arrow">&#9662;</span>
+                </button>
+                <div class="pdp-accordion-content" style="max-height: 200px;">
+                  Warm, rich, and fragrant with dominant notes of roasted green cardamom, cloves, stone flower (dagad phool), and mild Kashmiri chilli. Gives gravies an exquisite restaurant-quality depth without masking the freshness of your vegetables or paneer.
+                </div>
+              </div>
+
+              <div class="pdp-accordion-item">
+                <button type="button" class="pdp-accordion-btn">
+                  <span>How to Use in Everyday Cooking</span>
+                  <span class="pdp-accordion-arrow">&#9662;</span>
+                </button>
+                <div class="pdp-accordion-content">
+                  Add 1/2 to 1 teaspoon toward the final 3-5 minutes of simmering your curry, dal, or stir-fry. Cover with a lid and turn off heat to let the natural volatile essential oils infuse thoroughly.
+                </div>
+              </div>
+
+              <div class="pdp-accordion-item">
+                <button type="button" class="pdp-accordion-btn">
+                  <span>NABL Lab Assay &amp; Sourcing Purity</span>
+                  <span class="pdp-accordion-arrow">&#9662;</span>
+                </button>
+                <div class="pdp-accordion-content">
+                  Tested and certified in NABL-accredited food laboratories. Guaranteed zero artificial dyes, zero synthetic starch fillers, and 100% pesticide residues within strict export safety thresholds.
+                </div>
+              </div>
+
+              <div class="pdp-accordion-item">
+                <button type="button" class="pdp-accordion-btn">
+                  <span>Packaging &amp; Storage Guidelines</span>
+                  <span class="pdp-accordion-arrow">&#9662;</span>
+                </button>
+                <div class="pdp-accordion-content">
+                  Packaged in multi-layered, nitrogen-flushed food-grade zip-lock pouches to protect natural aromas from oxygen and light degradation. Store in a cool, dark kitchen shelf or airtight glass container.
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- FREQUENTLY PAIRED SPICES -->
+    <section class="products-catalog-section" style="background-color: #FFFFFF; border-top: 1px solid rgba(80, 60, 45, 0.08);">
+      <div class="container">
+        <div style="text-align: center; margin-bottom: 40px;">
+          <span style="font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-terracotta);">✦ CULINARY PAIRINGS</span>
+          <h2 style="font-family: var(--font-serif); font-size: 2rem; color: var(--text-dark); margin-top: 6px;">Frequently Paired Together</h2>
+        </div>
+
+        <div class="products-catalog-grid">
+          
+          <!-- Related 1 -->
+          <article class="spice-card" data-category="blends" data-name="Royal Garam Masala" data-weight="100g" data-price="210" data-image="assets/garammasala.png" data-id="garam-masala-100g">
+            <div class="spice-card-visual">
+              <span class="spice-badge highlight">Rich Aroma</span>
+              <a href="product-details.html?id=garam-masala" class="spice-img-link" aria-label="View Royal Garam Masala details">
+                <img src="assets/garammasala.png" alt="Royal Garam Masala" class="spice-card-img" loading="lazy">
+              </a>
+            </div>
+            <div class="spice-card-body">
+              <div class="spice-meta-top">
+                <span class="spice-category-tag">Signature Blend</span>
+                <span class="spice-weight-tag">100g</span>
+              </div>
+              <h3 class="spice-card-title"><a href="product-details.html?id=garam-masala">Royal Garam Masala</a></h3>
+              <div class="spice-card-script">Slow-Roasted Royal Formula</div>
+              <div class="spice-card-footer">
+                <div class="spice-price-row">
+                  <span class="spice-price-val">₹210</span>
+                  <span class="spice-price-original">₹260</span>
+                </div>
+                <button type="button" class="btn-add-bag-minimal" aria-label="Add Royal Garam Masala to Bag">
+                  <span>Add</span>
+                  <span>+</span>
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <!-- Related 2 -->
+          <article class="spice-card" data-category="powders" data-name="Red Chilli Powder" data-weight="250g" data-price="185" data-image="assets/chilli.png" data-id="red-chilli-250g">
+            <div class="spice-card-visual">
+              <span class="spice-badge">Cold Ground</span>
+              <a href="product-details.html?id=red-chilli" class="spice-img-link" aria-label="View Red Chilli Powder details">
+                <img src="assets/chilli.png" alt="Red Chilli Powder" class="spice-card-img" loading="lazy">
+              </a>
+            </div>
+            <div class="spice-card-body">
+              <div class="spice-meta-top">
+                <span class="spice-category-tag">Pure Ground</span>
+                <span class="spice-weight-tag">250g</span>
+              </div>
+              <h3 class="spice-card-title"><a href="product-details.html?id=red-chilli">Red Chilli Powder</a></h3>
+              <div class="spice-card-script">Deep Color &amp; Rich Pungency</div>
+              <div class="spice-card-footer">
+                <div class="spice-price-row">
+                  <span class="spice-price-val">₹185</span>
+                  <span class="spice-price-original">₹220</span>
+                </div>
+                <button type="button" class="btn-add-bag-minimal" aria-label="Add Red Chilli Powder to Bag">
+                  <span>Add</span>
+                  <span>+</span>
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <!-- Related 3 -->
+          <article class="spice-card" data-category="whole" data-name="Unjha Cumin Seeds" data-weight="250g" data-price="160" data-image="assets/step_01_sourced.png" data-id="cumin-seeds-250g">
+            <div class="spice-card-visual">
+              <span class="spice-badge">Unjha Origin</span>
+              <a href="product-details.html?id=cumin-seeds" class="spice-img-link" aria-label="View Unjha Cumin Seeds details">
+                <img src="assets/step_01_sourced.png" alt="Unjha Cumin Seeds" class="spice-card-img" loading="lazy">
+              </a>
+            </div>
+            <div class="spice-card-body">
+              <div class="spice-meta-top">
+                <span class="spice-category-tag">Unjha Whole</span>
+                <span class="spice-weight-tag">250g</span>
+              </div>
+              <h3 class="spice-card-title"><a href="product-details.html?id=cumin-seeds">Unjha Cumin Seeds</a></h3>
+              <div class="spice-card-script">Bold Grain &amp; Crisp Crackle</div>
+              <div class="spice-card-footer">
+                <div class="spice-price-row">
+                  <span class="spice-price-val">₹160</span>
+                  <span class="spice-price-original">₹190</span>
+                </div>
+                <button type="button" class="btn-add-bag-minimal" aria-label="Add Unjha Cumin Seeds to Bag">
+                  <span>Add</span>
+                  <span>+</span>
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <!-- Related 4 -->
+          <article class="spice-card" data-category="powders" data-name="Golden Turmeric Powder" data-weight="250g" data-price="140" data-image="assets/step_04_ground.png" data-id="turmeric-powder-250g">
+            <div class="spice-card-visual">
+              <span class="spice-badge highlight">High Curcumin</span>
+              <a href="product-details.html?id=turmeric-powder" class="spice-img-link" aria-label="View Golden Turmeric Powder details">
+                <img src="assets/step_04_ground.png" alt="Golden Turmeric Powder" class="spice-card-img" loading="lazy">
+              </a>
+            </div>
+            <div class="spice-card-body">
+              <div class="spice-meta-top">
+                <span class="spice-category-tag">Pure Ground</span>
+                <span class="spice-weight-tag">250g</span>
+              </div>
+              <h3 class="spice-card-title"><a href="product-details.html?id=turmeric-powder">Golden Turmeric Powder</a></h3>
+              <div class="spice-card-script">Single-Origin Potent Roots</div>
+              <div class="spice-card-footer">
+                <div class="spice-price-row">
+                  <span class="spice-price-val">₹140</span>
+                  <span class="spice-price-original">₹170</span>
+                </div>
+                <button type="button" class="btn-add-bag-minimal" aria-label="Add Golden Turmeric Powder to Bag">
+                  <span>Add</span>
+                  <span>+</span>
+                </button>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- SLIDEOUT SHOPPING BAG DRAWER -->
+  <div class="drawer-backdrop" id="drawer-backdrop"></div>
+  <aside class="cart-drawer" id="cart-drawer" aria-label="Shopping Bag">
+    <div class="drawer-header">
+      <h2 class="drawer-title">Your Bag</h2>
+      <button class="drawer-close" id="drawer-close" aria-label="Close Bag">&times;</button>
+    </div>
+
+    <div class="drawer-body" id="drawer-body">
+      <!-- Dynamically filled by script.js -->
+    </div>
+
+    <div class="drawer-footer">
+      <div class="drawer-total">
+        <span>Subtotal</span>
+        <span>₹590.00</span>
+      </div>
+      <button class="btn-checkout" onclick="alert('Thank you! Checkout process connected with SYD Spices order desk.')">Proceed to Checkout</button>
+    </div>
+  </aside>
+
+  <!-- SITE FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-main-wrap">
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-brand-col">
+            <a href="index.html" class="footer-brand-lockup" aria-label="SYD Spices Home">
+              <img src="assets/main logo .png" alt="SYD Spices Brand Logo" class="footer-big-logo">
+              <div class="footer-brand-text">
+                <span class="footer-brand-title">SYD SPICES</span>
+                <span class="footer-brand-tagline">Spice Your Dish</span>
+              </div>
+            </a>
+            <p class="footer-brand-bio">
+              Carefully selected spices, crafted to bring the true taste of India to every kitchen. Pure ingredients, authentic flavour, directly from Unjha, Gujarat.
+            </p>
+            <div class="footer-trust-pills">
+              <span class="trust-pill">🌿 100% Pure</span>
+              <span class="trust-pill">🛡️ FSSAI Certified</span>
+              <span class="trust-pill">🇮🇳 Made in Unjha</span>
+            </div>
+          </div>
+
+          <div class="footer-links-col">
+            <h3 class="footer-col-title">Explore</h3>
+            <ul class="footer-links-list">
+              <li><a href="index.html" class="footer-link">Home</a></li>
+              <li><a href="about.html" class="footer-link">About Us</a></li>
+              <li><a href="products.html" class="footer-link">Our Spices</a></li>
+              <li><a href="quality.html" class="footer-link">Quality Standards</a></li>
+              <li><a href="inspiration.html" class="footer-link">Culinary Inspiration</a></li>
+              <li><a href="contact.html" class="footer-link">Contact Us</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-contact-col">
+            <h3 class="footer-col-title">Get in Touch</h3>
+            <div class="footer-contact-item">
+              <span class="contact-icon">✉️</span>
+              <div class="contact-detail">
+                <strong>Email Us</strong>
+                <a href="mailto:info@sydspices.com" class="footer-contact-link">info@sydspices.com</a>
+              </div>
+            </div>
+            <div class="footer-contact-item">
+              <span class="contact-icon">💬</span>
+              <div class="contact-detail">
+                <strong>Phone &amp; WhatsApp</strong>
+                <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer" class="footer-contact-link">+91 98765 43210</a>
+              </div>
+            </div>
+            <div class="footer-contact-item">
+              <span class="contact-icon">📍</span>
+              <div class="contact-detail">
+                <strong>Location</strong>
+                <p>Gala No. 12, Spice Park, Unjha - 384170, Gujarat, India</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom-bar">
+      <div class="container">
+        <div class="footer-bottom-inner">
+          <div class="footer-copyright">
+            &copy; 2026 <strong>SYD SPICES</strong>. All rights reserved. Pure Indian Spices. Authentic Taste.
+          </div>
+          <div class="footer-legal-links">
+            <a href="#" class="legal-link">Privacy Policy</a>
+            <span class="legal-sep">&bull;</span>
+            <a href="#" class="legal-link">Terms &amp; Conditions</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Persistent Floating WhatsApp Action -->
+  <a href="https://wa.me/919876543210?text=Hi%20SYD%20Spices%2C%20I%20have%20an%20inquiry%20about%20your%20pure%20spices." target="_blank" rel="noopener noreferrer" class="whatsapp-float-btn" aria-label="Chat directly on WhatsApp with SYD Spices">
+    <span class="whatsapp-pulse-ring"></span>
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.993.541 1.939.814 2.796.814 3.182 0 5.768-2.587 5.769-5.766 0-3.18-2.586-5.766-5.769-5.766zm3.385 8.163c-.145.409-.844.755-1.157.784-.314.029-.698.058-2.128-.535-1.708-.707-2.809-2.454-2.894-2.57-.085-.116-.707-.942-.707-1.796 0-.854.448-1.274.607-1.448.159-.174.346-.217.462-.217.116 0 .232.001.332.006.106.005.249-.04.39.299.144.347.491 1.2.534 1.287.043.087.072.188.014.303-.058.116-.087.188-.173.289l-.26.303c-.087.087-.179.182-.077.357.101.174.45 0.743.966 1.202.665.592 1.226.776 1.4.863.174.087.275.072.376-.044.101-.116.433-.506.549-.679.116-.174.232-.145.39-.087s1.011.477 1.184.564c.174.087.289.13.332.203.043.072.043.42-.102.829zM12 2C6.477 2 2 6.477 2 12c0 1.891.526 3.66 1.44 5.176L2 22l4.981-1.306C8.423 21.536 10.154 22 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/>
+    </svg>
+  </a>
+
+  <!-- JavaScript -->
+  <script src="script.js"></script>
+</body>
+</html>
