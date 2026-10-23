@@ -6,8 +6,8 @@
 
 * **Brand Name**: **SYD Spices** (*SYD — Spice Your Dish*)
 * **Corporate Entity**: SYD SPICES PVT. LTD.
-* **Geographical Origin**: Gala No. 12, Spice Park, Unjha - 384170, Gujarat, India.
-  * *Strategic Value*: **Unjha** is widely recognized as Asia’s premier wholesale spice hub (especially for cumin, fennel, mustard, coriander, and whole spices). Having operations rooted in Unjha provides direct access to high-grade agricultural sourcing.
+* **Geographical Origin**: Gala No. 12, Spice Park, Gujarat - 384170, India.
+  * *Strategic Value*: **India** is widely recognized as Asia’s premier wholesale spice hub (especially for cumin, fennel, mustard, coriander, and whole spices). Having operations rooted in India provides direct access to high-grade agricultural sourcing.
 * **Core Contact & Support**:
   * **Email**: info@sydspices.com
   * **Customer Care Hotline**: +91 98765 43210
@@ -75,7 +75,7 @@ graph LR
 [01 Sourced] ➔ [02 Handpicked & Checked] ➔ [03 Cleaned] ➔ [04 Carefully Ground] ➔ [05 Quality Checked] ➔ [06 Hygienically Packed]
 ```
 
-1. **01 - Carefully Sourced**: Ethical procurement directly from reliable spice farmers and Unjha mandis.
+1. **01 - Carefully Sourced**: Ethical procurement directly from reliable spice farmers and India mandis.
 2. **02 - Handpicked & Checked**: Manual and mechanical inspection for physical consistency, color, and grain integrity.
 3. **03 - Cleaned**: Removal of dust, stems, impurities, and foreign agricultural matter.
 4. **04 - Carefully Ground**: Controlled slow stone-milling to protect delicate volatile terpenes and aromas.
@@ -117,7 +117,7 @@ graph LR
    * Minimalist typography in **Playfair Display** and **Plus Jakarta Sans**.
    * Slider controls: numbered counters (`01/03`), animated progress bars, and arrow buttons.
 3. **Purity Assurance Strip**:
-   * 4-pillar trust indicators (*Whole Spices, Slow-Ground, Small Batch, Unjha Origin*).
+   * 4-pillar trust indicators (*Whole Spices, Slow-Ground, Small Batch, India Origin*).
 4. **Interactive Signature Collection Grid**:
    * Product cards with weight selectors (100g, 250g, 500g), price updates, ingredient lists, and direct Add-to-Bag buttons.
 5. **Why Small Batch & 6-Step Process Interactive Showcase**:
