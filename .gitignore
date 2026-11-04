@@ -2,3 +2,24 @@
 .DS_Store
 Thumbs.db
 scratch/
+credentials.md
+assets/orig_*
+
+# Backend ignores
+backend/.env
+backend/.env.backup
+backend/.env.production
+backend/vendor/
+backend/node_modules/
+backend/storage/framework/cache/*
+!backend/storage/framework/cache/.gitignore
+backend/storage/framework/sessions/*
+!backend/storage/framework/sessions/.gitignore
+backend/storage/framework/views/*
+!backend/storage/framework/views/.gitignore
+backend/storage/logs/*
+!backend/storage/logs/.gitignore
+backend/storage/debugbar/*
+backend/public/assets
+backend/public/storage/assets
+backend/test_attrs.php
