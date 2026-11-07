@@ -699,6 +699,269 @@ $registerSydApiEndpoints = function () {
         }
     });
 
+    // 3C. Direct Product Update (Edit Spice)
+    $handleProductUpdate = function (Request $request, $id) {
+        $target = trim($id);
+        $prod = DB::table('products')->where('id', $target)->orWhere('sku', $target)->first();
+        if (!$prod) {
+            $flat = DB::table('product_flat')->where('url_key', $target)->orWhere('sku', $target)->orWhere('product_id', $target)->first();
+            if ($flat) {
+                $prod = DB::table('products')->where('id', $flat->product_id)->first();
+            }
+        }
+
+        if (!$prod) {
+            return response()->json(['success' => false, 'message' => 'Product not found.'], 404);
+        }
+
+        $prodId = $prod->id;
+        $name = trim($request->input('name', ''));
+        if (empty($name)) {
+            $existingFlat = DB::table('product_flat')->where('product_id', $prodId)->first();
+            $name = $existingFlat ? $existingFlat->name : 'Spice Product';
+        }
+
+        $price = (float) $request->input('price', 195);
+        $weight = trim((string) $request->input('weight', '250g'));
+        $qty = (int) $request->input('stock', $request->input('quantity', 100));
+
+        // Category
+        $catIdInput = (int) $request->input('category_id', 0);
+        $catInput = strtolower(trim((string) $request->input('category', '')));
+        if (in_array($catIdInput, [2, 3, 4])) {
+            $catId = $catIdInput;
+        } elseif (str_contains($catInput, 'blend') || str_contains($catInput, 'masala')) {
+            $catId = 3;
+        } elseif (str_contains($catInput, 'grind') || str_contains($catInput, 'powder') || str_contains($catInput, 'chilli') || str_contains($catInput, 'turmeric')) {
+            $catId = 4;
+        } else {
+            $catId = 2;
+        }
+        $catNames = [2 => 'Whole Spices', 3 => 'Blended Spices', 4 => 'Grinded Spices'];
+        $catName = $catNames[$catId] ?? 'Whole Spices';
+
+        $desc = trim($request->input('desc', $request->input('description', "100% pure single-origin {$name}.")));
+        $shortDesc = trim($request->input('short_description', $request->input('subtitle', "Handpicked unpolished {$name}.")));
+
+        // Images handling
+        $images = $request->input('images', []);
+        if (is_string($images)) {
+            $decoded = json_decode($images, true);
+            $images = is_array($decoded) ? $decoded : array_filter(array_map('trim', explode(',', $images)));
+        }
+        if (!is_array($images)) $images = [];
+        $singleImage = trim($request->input('image', ''));
+        if (!empty($singleImage) && !in_array($singleImage, $images)) {
+            array_unshift($images, $singleImage);
+        }
+        if (empty($images)) {
+            $existingImg = DB::table('product_images')->where('product_id', $prodId)->orderBy('position', 'asc')->value('path');
+            $images = [$existingImg ?: 'assets/magicbland.png'];
+        }
+        $primaryImage = $images[0];
+
+        // Pack sizes and weights
+        $packPricesJson = $request->input('pack_prices', '');
+        if (!empty($packPricesJson)) {
+            $decodedPacks = is_array($packPricesJson) ? $packPricesJson : json_decode($packPricesJson, true);
+            if (is_array($decodedPacks) && count($decodedPacks) > 0) {
+                $normalizedPacks = [];
+                foreach ($decodedPacks as $pack) {
+                    $pPrice = (float) ($pack['price'] ?? 195);
+                    $isAct = !empty($pack['active']) || !empty($pack['isDefault']);
+                    $normalizedPacks[] = [
+                        'weight' => (string) ($pack['weight'] ?? '250g'),
+                        'price'  => $pPrice,
+                        'strike' => (float) round($pPrice * 1.25),
+                        'active' => $isAct,
+                    ];
+                }
+                if (!collect($normalizedPacks)->contains('active', true) && count($normalizedPacks) > 0) {
+                    $normalizedPacks[0]['active'] = true;
+                }
+                $defaultPack = collect($normalizedPacks)->firstWhere('active', true) ?: $normalizedPacks[0];
+                $price = (float) ($defaultPack['price'] ?? $price);
+                $weight = (string) ($defaultPack['weight'] ?? $weight);
+                $packPricesJson = json_encode($normalizedPacks);
+            }
+        } else {
+            $packPricesJson = json_encode([
+                ['weight' => '100g', 'price' => (float) round($price * 0.5), 'strike' => (float) round($price * 0.65), 'active' => false],
+                ['weight' => $weight, 'price' => $price, 'strike' => (float) round($price * 1.25), 'active' => true],
+                ['weight' => '500g', 'price' => (float) round($price * 1.85), 'strike' => (float) round($price * 2.3), 'active' => false],
+            ]);
+        }
+
+        DB::beginTransaction();
+        try {
+            DB::table('product_categories')->where('product_id', $prodId)->delete();
+            DB::table('product_categories')->insert([
+                'product_id'  => $prodId,
+                'category_id' => $catId,
+            ]);
+
+            DB::table('product_inventories')->updateOrInsert(
+                ['product_id' => $prodId, 'inventory_source_id' => 1],
+                ['qty' => $qty, 'vendor_id' => 0]
+            );
+
+            DB::table('product_inventory_indices')->updateOrInsert(
+                ['product_id' => $prodId, 'channel_id' => 1],
+                ['qty' => $qty, 'updated_at' => now()]
+            );
+
+            DB::table('product_price_indices')->updateOrInsert(
+                ['product_id' => $prodId, 'customer_group_id' => 1, 'channel_id' => 1],
+                [
+                    'min_price'         => $price,
+                    'regular_min_price' => $price,
+                    'max_price'         => $price,
+                    'regular_max_price' => $price,
+                    'updated_at'        => now(),
+                ]
+            );
+
+            // Re-sync images
+            DB::table('product_images')->where('product_id', $prodId)->delete();
+            foreach ($images as $pos => $imgPath) {
+                DB::table('product_images')->insert([
+                    'type'       => 'images',
+                    'path'       => $imgPath,
+                    'product_id' => $prodId,
+                    'position'   => $pos + 1,
+                ]);
+            }
+
+            // Update attributes
+            DB::table('product_attribute_values')->updateOrInsert(
+                ['product_id' => $prodId, 'attribute_id' => 2],
+                ['text_value' => $name, 'locale' => 'en']
+            );
+            DB::table('product_attribute_values')->updateOrInsert(
+                ['product_id' => $prodId, 'attribute_id' => 9],
+                ['text_value' => $shortDesc, 'locale' => 'en']
+            );
+            DB::table('product_attribute_values')->updateOrInsert(
+                ['product_id' => $prodId, 'attribute_id' => 10],
+                ['text_value' => $desc, 'locale' => 'en']
+            );
+            DB::table('product_attribute_values')->updateOrInsert(
+                ['product_id' => $prodId, 'attribute_id' => 11],
+                ['float_value' => $price]
+            );
+            DB::table('product_attribute_values')->updateOrInsert(
+                ['product_id' => $prodId, 'attribute_id' => 18],
+                ['text_value' => $packPricesJson, 'locale' => 'en']
+            );
+            DB::table('product_attribute_values')->updateOrInsert(
+                ['product_id' => $prodId, 'attribute_id' => 22],
+                ['text_value' => (string) $weight]
+            );
+
+            // Update product flat
+            DB::table('product_flat')->where('product_id', $prodId)->update([
+                'name'              => $name,
+                'short_description' => $shortDesc,
+                'description'       => $desc,
+                'category_name'     => $catName,
+                'price'             => $price,
+                'weight'            => is_numeric($weight) ? (float) $weight : 0.25,
+                'quantity'          => $qty,
+                'images_count'      => count($images),
+                'base_image'        => $primaryImage,
+                'meta_description'  => $packPricesJson,
+                'updated_at'        => now(),
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Product updated successfully.',
+                'data'    => [
+                    'id'       => $prod->sku,
+                    'prod_id'  => $prodId,
+                    'name'     => $name,
+                    'price'    => $price,
+                    'stock'    => $qty,
+                    'category' => $catName,
+                ]
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    };
+
+    Route::post('/products/{id}/update', $handleProductUpdate);
+    Route::put('/products/{id}', $handleProductUpdate);
+
+    // 3D. Delete Product
+    $handleProductDelete = function ($id) {
+        $target = trim($id);
+        $prod = DB::table('products')->where('id', $target)->orWhere('sku', $target)->first();
+        if (!$prod) {
+            $flat = DB::table('product_flat')->where('url_key', $target)->orWhere('sku', $target)->orWhere('product_id', $target)->first();
+            if ($flat) {
+                $prod = DB::table('products')->where('id', $flat->product_id)->first();
+            }
+        }
+
+        if (!$prod) {
+            return response()->json(['success' => false, 'message' => 'Product not found.'], 404);
+        }
+
+        $prodId = $prod->id;
+        DB::beginTransaction();
+        try {
+            DB::table('product_flat')->where('product_id', $prodId)->delete();
+            DB::table('product_categories')->where('product_id', $prodId)->delete();
+            DB::table('product_channels')->where('product_id', $prodId)->delete();
+            DB::table('product_inventories')->where('product_id', $prodId)->delete();
+            DB::table('product_inventory_indices')->where('product_id', $prodId)->delete();
+            DB::table('product_price_indices')->where('product_id', $prodId)->delete();
+            DB::table('product_images')->where('product_id', $prodId)->delete();
+            DB::table('product_attribute_values')->where('product_id', $prodId)->delete();
+            DB::table('product_customer_group_prices')->where('product_id', $prodId)->delete();
+            DB::table('product_reviews')->where('product_id', $prodId)->delete();
+            DB::table('products')->where('id', $prodId)->delete();
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Product deleted successfully.'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    };
+
+    Route::delete('/products/{id}', $handleProductDelete);
+    Route::post('/products/{id}/delete', $handleProductDelete);
+
+    // 3E. Fast Stock Adjustment
+    Route::post('/products/{id}/stock', function (Request $request, $id) {
+        $qty = (int) $request->input('quantity', $request->input('stock', $request->input('qty', 0)));
+        $target = trim($id);
+        $prod = DB::table('products')->where('id', $target)->orWhere('sku', $target)->first();
+        if (!$prod) {
+            $prod = DB::table('product_flat')->where('url_key', $target)->orWhere('sku', $target)->orWhere('product_id', $target)->first();
+            if ($prod) {
+                $prod = DB::table('products')->where('id', $prod->product_id)->first();
+            }
+        }
+        if (!$prod) {
+            return response()->json(['success' => false, 'message' => 'Product not found.'], 404);
+        }
+
+        DB::table('product_inventories')->where('product_id', $prod->id)->update(['qty' => $qty]);
+        DB::table('product_inventory_indices')->where('product_id', $prod->id)->update(['qty' => $qty, 'updated_at' => now()]);
+        DB::table('product_flat')->where('product_id', $prod->id)->update(['quantity' => $qty, 'updated_at' => now()]);
+
+        return response()->json(['success' => true, 'message' => 'Stock updated successfully.', 'stock' => $qty]);
+    });
+
     // 4. Single Product Details
     Route::get('/products/{id}', function ($id) {
         $all = getSydSpicesProducts();
@@ -715,6 +978,109 @@ $registerSydApiEndpoints = function () {
         }
 
         return response()->json(['success' => false, 'message' => 'Spice product not found.'], 404);
+    });
+
+    // 4B. Product Reviews (List & Submit)
+    Route::get('/products/{id}/reviews', function ($id) {
+        $target = strtolower(trim($id));
+        $prodId = null;
+        $prod = DB::table('products')->where('id', $target)->orWhere('sku', $target)->first();
+        if ($prod) {
+            $prodId = $prod->id;
+        } else {
+            $flat = DB::table('product_flat')
+                ->where('url_key', $target)
+                ->orWhere('sku', $target)
+                ->orWhere('product_id', $target)
+                ->first();
+            if ($flat) {
+                $prodId = $flat->product_id;
+            }
+        }
+
+        if (!$prodId) {
+            return response()->json([
+                'success'        => true,
+                'average_rating' => 4.9,
+                'total_reviews'  => 0,
+                'reviews'        => []
+            ]);
+        }
+
+        $reviews = DB::table('product_reviews')
+            ->where('product_id', $prodId)
+            ->where('status', 'approved')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        $avg = $reviews->count() > 0 ? round($reviews->avg('rating'), 1) : 4.9;
+
+        return response()->json([
+            'success'        => true,
+            'average_rating' => $avg,
+            'total_reviews'  => $reviews->count(),
+            'reviews'        => $reviews->map(function ($r) {
+                return [
+                    'id'         => $r->id,
+                    'name'       => $r->name ?: 'Verified Home Cook',
+                    'title'      => $r->title ?: 'Authentic Pure Spice',
+                    'rating'     => (int) $r->rating,
+                    'comment'    => $r->comment,
+                    'created_at' => $r->created_at ? date('d M Y', strtotime($r->created_at)) : 'Recent',
+                ];
+            })
+        ]);
+    });
+
+    Route::post('/products/{id}/reviews', function (Request $request, $id) {
+        $validator = Validator::make($request->all(), [
+            'name'    => 'required|string|max:100',
+            'rating'  => 'required|integer|min:1|max:5',
+            'comment' => 'required|string|max:1000',
+            'title'   => 'nullable|string|max:150',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        $target = strtolower(trim($id));
+        $prodId = null;
+        $prod = DB::table('products')->where('id', $target)->orWhere('sku', $target)->first();
+        if ($prod) {
+            $prodId = $prod->id;
+        } else {
+            $flat = DB::table('product_flat')
+                ->where('url_key', $target)
+                ->orWhere('sku', $target)
+                ->orWhere('product_id', $target)
+                ->first();
+            if ($flat) {
+                $prodId = $flat->product_id;
+            }
+        }
+
+        if (!$prodId) {
+            return response()->json(['success' => false, 'message' => 'Product not found.'], 404);
+        }
+
+        $revId = DB::table('product_reviews')->insertGetId([
+            'name'        => trim($request->input('name')),
+            'title'       => trim($request->input('title', 'Verified Pure Spice Review')),
+            'rating'      => (int) $request->input('rating'),
+            'comment'     => trim($request->input('comment')),
+            'status'      => 'approved',
+            'product_id'  => $prodId,
+            'customer_id' => null,
+            'created_at'  => now(),
+            'updated_at'  => now(),
+        ]);
+
+        return response()->json([
+            'success'   => true,
+            'message'   => 'Thank you! Your verified review has been published.',
+            'review_id' => $revId
+        ], 201);
     });
 
     // 5. Inquiries & Contact Form
@@ -1088,13 +1454,31 @@ $registerSydApiEndpoints = function () {
                 'updated_at'   => now(),
             ]);
 
-            // Save Order Items
+            // Save Order Items & Decrement Inventory Stock
             foreach ($request->input('items') as $it) {
                 $qty = (int) ($it['quantity'] ?? $it['qty'] ?? 1);
                 $price = (float) ($it['price'] ?? 0);
                 $sku = $it['id'] ?? 'SPICE-' . rand(100, 999);
                 $matchedProduct = DB::table('products')->where('sku', $sku)->first();
+                if (!$matchedProduct) {
+                    $matchedProduct = DB::table('products')->where('id', $sku)->first();
+                }
+                if (!$matchedProduct) {
+                    $flatMatch = DB::table('product_flat')->where('url_key', $sku)->orWhere('sku', $sku)->first();
+                    if ($flatMatch) {
+                        $matchedProduct = DB::table('products')->where('id', $flatMatch->product_id)->first();
+                    }
+                }
                 $prodId = $matchedProduct ? $matchedProduct->id : null;
+
+                // Decrement stock for real inventory control
+                if ($prodId) {
+                    try {
+                        DB::table('product_inventories')->where('product_id', $prodId)->decrement('qty', $qty);
+                        DB::table('product_inventory_indices')->where('product_id', $prodId)->decrement('qty', $qty);
+                        DB::table('product_flat')->where('product_id', $prodId)->decrement('quantity', $qty);
+                    } catch (\Exception $e) {}
+                }
 
                 DB::table('order_items')->insert([
                     'order_id'       => $orderId,
@@ -1118,6 +1502,13 @@ $registerSydApiEndpoints = function () {
                 ]);
             }
 
+            // Deactivate cart after checkout
+            if (!empty($customerId)) {
+                try {
+                    DB::table('cart')->where('customer_id', $customerId)->update(['is_active' => 0]);
+                } catch (\Exception $e) {}
+            }
+
             return response()->json([
                 'success'        => true,
                 'order_id'       => $orderId,
@@ -1126,6 +1517,7 @@ $registerSydApiEndpoints = function () {
                 'grand_total'    => $grandTotal,
                 'payment_method' => $paymentTitle,
                 'estimated_delivery' => '2-4 Business Days',
+                'tracking_url'   => "http://127.0.0.1:3000/products.html?track=" . $orderIncrementId,
                 'message'        => 'Order confirmed! Your fresh small-batch spices are being packed for dispatch.',
             ], 201);
         } catch (\Exception $e) {
@@ -1163,6 +1555,255 @@ $registerSydApiEndpoints = function () {
             'status'         => 'PAYMENT_SUCCESS',
             'payment_method' => 'UPI / NetBanking',
             'message'        => 'Payment captured and verified.',
+        ]);
+    });
+
+    // 12. Order Tracking by Order Number or Phone
+    Route::get('/orders/track', function (Request $request) {
+        $orderId = trim($request->query('order_id', $request->query('order_number', $request->query('id', ''))));
+        $phone = trim($request->query('phone', ''));
+
+        if (empty($orderId) && empty($phone)) {
+            return response()->json(['success' => false, 'message' => 'Please provide an Order ID or Phone number.'], 400);
+        }
+
+        $query = DB::table('orders');
+        if (!empty($orderId)) {
+            $query->where(function ($q) use ($orderId) {
+                $q->where('increment_id', $orderId)
+                  ->orWhere('increment_id', 'LIKE', "%$orderId%")
+                  ->orWhere('id', $orderId);
+            });
+        } elseif (!empty($phone)) {
+            $customerIds = DB::table('customers')->where('phone', 'like', "%$phone%")->pluck('id');
+            $query->whereIn('customer_id', $customerIds);
+        }
+
+        $order = $query->orderBy('id', 'desc')->first();
+        if (!$order) {
+            return response()->json(['success' => false, 'message' => 'No order found matching your inquiry.'], 404);
+        }
+
+        $items = DB::table('order_items')->where('order_id', $order->id)->get();
+        $address = DB::table('addresses')->where('order_id', $order->id)->where('address_type', 'order_shipping')->first();
+        $payment = DB::table('order_payment')->where('order_id', $order->id)->first();
+
+        $status = strtolower($order->status ?: 'processing');
+        $steps = [
+            ['title' => 'Order Confirmed', 'desc' => 'Order received and logged at Spice Park Hub', 'done' => true],
+            ['title' => 'Cold-Ground & Packed', 'desc' => 'Hygienically heat-sealed in aroma barrier pouch', 'done' => in_array($status, ['packed', 'dispatched', 'delivered'])],
+            ['title' => 'Dispatched via Express', 'desc' => 'Handed over to Delhivery logistics express courier', 'done' => in_array($status, ['dispatched', 'delivered'])],
+            ['title' => 'Delivered to Doorstep', 'desc' => 'Fresh kitchen-grade spices delivered', 'done' => ($status === 'delivered')],
+        ];
+
+        return response()->json([
+            'success'      => true,
+            'order'        => [
+                'id'               => $order->id,
+                'order_number'     => $order->increment_id,
+                'customer_name'    => trim($order->customer_first_name . ' ' . $order->customer_last_name),
+                'customer_email'   => $order->customer_email,
+                'phone'            => $address ? $address->phone : '',
+                'shipping_address' => $address ? ($address->address . ', ' . $address->city . ', ' . $address->state . ' - ' . $address->postcode) : 'Spice Park Mandi Direct Delivery',
+                'grand_total'      => (float) $order->grand_total,
+                'payment_method'   => $payment ? $payment->method_title : 'Cash on Delivery',
+                'status'           => ucfirst($order->status),
+                'created_at'       => date('d M Y, h:i A', strtotime($order->created_at)),
+                'items'            => $items->map(function ($it) {
+                    return [
+                        'name'     => $it->name,
+                        'quantity' => (int) $it->qty_ordered,
+                        'price'    => (float) $it->price,
+                        'total'    => (float) $it->total,
+                    ];
+                }),
+                'tracking_steps'   => $steps,
+            ]
+        ]);
+    });
+
+    // 13. Admin Orders List & Management
+    Route::get('/admin/orders', function (Request $request) {
+        $status = strtolower(trim($request->query('status', '')));
+        $search = trim($request->query('search', ''));
+
+        $query = DB::table('orders')->orderBy('id', 'desc');
+
+        if (!empty($status) && $status !== 'all') {
+            $query->where('status', $status);
+        }
+
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('increment_id', 'LIKE', "%$search%")
+                  ->orWhere('customer_first_name', 'LIKE', "%$search%")
+                  ->orWhere('customer_last_name', 'LIKE', "%$search%")
+                  ->orWhere('customer_email', 'LIKE', "%$search%");
+            });
+        }
+
+        $orders = $query->limit(100)->get();
+        $orderIds = $orders->pluck('id');
+
+        $itemsByOrder = DB::table('order_items')->whereIn('order_id', $orderIds)->get()->groupBy('order_id');
+        $addressesByOrder = DB::table('addresses')->whereIn('order_id', $orderIds)->where('address_type', 'order_shipping')->get()->keyBy('order_id');
+        $paymentsByOrder = DB::table('order_payment')->whereIn('order_id', $orderIds)->get()->keyBy('order_id');
+
+        $data = $orders->map(function ($o) use ($itemsByOrder, $addressesByOrder, $paymentsByOrder) {
+            $addr = $addressesByOrder[$o->id] ?? null;
+            $pay = $paymentsByOrder[$o->id] ?? null;
+            $items = $itemsByOrder[$o->id] ?? collect([]);
+
+            return [
+                'id'             => $o->id,
+                'order_number'   => $o->increment_id,
+                'customer_name'  => trim($o->customer_first_name . ' ' . $o->customer_last_name),
+                'customer_email' => $o->customer_email,
+                'customer_phone' => $addr ? $addr->phone : '',
+                'city'           => $addr ? $addr->city : 'Gujarat',
+                'state'          => $addr ? $addr->state : 'Gujarat',
+                'pincode'        => $addr ? $addr->postcode : '384170',
+                'full_address'   => $addr ? ($addr->address . ', ' . $addr->city . ', ' . $addr->state . ' - ' . $addr->postcode) : '',
+                'grand_total'    => (float) $o->grand_total,
+                'status'         => $o->status ?: 'processing',
+                'payment_method' => $pay ? $pay->method_title : 'COD',
+                'items_count'    => $o->total_item_count ?: count($items),
+                'items_list'     => $items->map(fn($it) => $it->name . ' (×' . (int)$it->qty_ordered . ')')->implode(', '),
+                'items'          => $items->map(fn($it) => [
+                    'name'     => $it->name,
+                    'quantity' => (int) $it->qty_ordered,
+                    'price'    => (float) $it->price,
+                    'total'    => (float) $it->total,
+                ]),
+                'created_at'     => date('d M Y, h:i A', strtotime($o->created_at)),
+            ];
+        });
+
+        return response()->json(['success' => true, 'count' => count($data), 'orders' => $data]);
+    });
+
+    Route::post('/admin/orders/{id}/status', function (Request $request, $id) {
+        $status = strtolower(trim($request->input('status')));
+        $validStatuses = ['processing', 'packed', 'dispatched', 'delivered', 'cancelled'];
+        if (!in_array($status, $validStatuses)) {
+            return response()->json(['success' => false, 'message' => 'Invalid status. Allowed: ' . implode(', ', $validStatuses)], 422);
+        }
+
+        $order = DB::table('orders')->where('id', $id)->orWhere('increment_id', $id)->first();
+        if (!$order) {
+            return response()->json(['success' => false, 'message' => 'Order not found.'], 404);
+        }
+
+        DB::table('orders')->where('id', $order->id)->update([
+            'status'     => $status,
+            'updated_at' => now(),
+        ]);
+
+        $comment = $request->input('comment', "Order status updated to $status");
+        try {
+            DB::table('order_comments')->insert([
+                'comment'           => $comment,
+                'customer_notified' => 1,
+                'order_id'          => $order->id,
+                'created_at'        => now(),
+                'updated_at'        => now(),
+            ]);
+        } catch (\Exception $e) {}
+
+        return response()->json([
+            'success' => true,
+            'message' => "Order #{$order->increment_id} updated to $status.",
+            'status'  => $status
+        ]);
+    });
+
+    // 14. Admin Inquiries List & Management
+    Route::get('/admin/inquiries', function (Request $request) {
+        $status = trim($request->query('status', ''));
+        $query = DB::table('inquiries')->orderBy('id', 'desc');
+        if (!empty($status) && $status !== 'all') {
+            $query->where('status', $status);
+        }
+        $inquiries = $query->limit(100)->get();
+
+        return response()->json([
+            'success'   => true,
+            'count'     => count($inquiries),
+            'inquiries' => $inquiries->map(function ($i) {
+                return [
+                    'id'           => $i->id,
+                    'name'         => $i->name,
+                    'email'        => $i->email,
+                    'phone'        => $i->phone ?: 'N/A',
+                    'inquiry_type' => $i->inquiry_type ?: 'General Inquiry',
+                    'message'      => $i->message,
+                    'status'       => $i->status ?: 'New',
+                    'created_at'   => date('d M Y, h:i A', strtotime($i->created_at)),
+                ];
+            })
+        ]);
+    });
+
+    Route::post('/admin/inquiries/{id}/status', function (Request $request, $id) {
+        $status = trim($request->input('status', 'Contacted'));
+        DB::table('inquiries')->where('id', $id)->update([
+            'status'     => $status,
+            'updated_at' => now(),
+        ]);
+
+        return response()->json(['success' => true, 'message' => "Inquiry #$id marked as $status."]);
+    });
+
+    // 15. Customer Past Orders
+    Route::get('/customers/{id}/orders', function ($id) {
+        $customer = DB::table('customers')->where('id', $id)->orWhere('email', $id)->first();
+        if (!$customer) {
+            return response()->json(['success' => false, 'message' => 'Customer not found.'], 404);
+        }
+
+        $orders = DB::table('orders')->where('customer_id', $customer->id)->orderBy('id', 'desc')->get();
+        $orderIds = $orders->pluck('id');
+        $items = DB::table('order_items')->whereIn('order_id', $orderIds)->get()->groupBy('order_id');
+
+        return response()->json([
+            'success' => true,
+            'orders'  => $orders->map(function ($o) use ($items) {
+                return [
+                    'id'           => $o->id,
+                    'order_number' => $o->increment_id,
+                    'grand_total'  => (float) $o->grand_total,
+                    'status'       => $o->status,
+                    'items_count'  => $o->total_item_count,
+                    'created_at'   => date('d M Y', strtotime($o->created_at)),
+                    'items'        => ($items[$o->id] ?? collect([]))->map(fn($it) => [
+                        'name'     => $it->name,
+                        'quantity' => (int) $it->qty_ordered,
+                        'price'    => (float) $it->price,
+                    ]),
+                ];
+            })
+        ]);
+    });
+
+    // 16. Store & Dashboard Stats Overview
+    Route::get('/admin/stats', function () {
+        $productsCount = DB::table('products')->count();
+        $ordersCount = DB::table('orders')->count();
+        $pendingOrders = DB::table('orders')->where('status', 'processing')->count();
+        $totalRevenue = (float) DB::table('orders')->where('status', '!=', 'cancelled')->sum('grand_total');
+        $newInquiries = DB::table('inquiries')->where('status', 'New')->count();
+        $customersCount = DB::table('customers')->count();
+
+        return response()->json([
+            'success' => true,
+            'stats'   => [
+                'products'       => $productsCount,
+                'orders'         => $ordersCount,
+                'pending_orders' => $pendingOrders,
+                'revenue'        => round($totalRevenue, 2),
+                'inquiries'      => $newInquiries,
+                'customers'      => $customersCount,
+            ]
         ]);
     });
 };

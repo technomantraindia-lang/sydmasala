@@ -162,6 +162,8 @@ Route::get('/test-login-and-dashboard', function () {
 
 Route::get('/', fn () => redirect()->route('admin.session.create'));
 
+Route::get('/manager', fn () => view('manager'))->name('syd.manager');
+
 Route::get('/storefront', fn () => redirect('/'))->name('shop.home.index');
 Route::get('/storefront/item/{slug?}', fn ($slug = null) => redirect('/products.html'))->name('shop.product_or_category.index');
 Route::get('/storefront/page/{slug?}', fn ($slug = null) => redirect('/'))->name('shop.cms.page');

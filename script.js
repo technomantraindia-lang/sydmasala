@@ -621,6 +621,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div style="margin-bottom: 24px; font-size: 0.8rem; color: #7D736A;">
                   Payment Mode: <strong>${result.payment_method}</strong> &bull; Estimated Delivery: <strong>${result.estimated_delivery}</strong>
                 </div>
+                <button type="button" class="btn-success-close" style="margin-bottom:10px; background:#fff; color:var(--color-terracotta); border:1.5px solid var(--color-terracotta);" onclick="openOrderTracking('${result.order_number}')">Track Live Dispatch Status</button>
                 <button type="button" class="btn-success-close" id="btn-continue-shopping">Continue Exploring Spices</button>
               </div>
             `;
@@ -653,6 +654,101 @@ document.addEventListener('DOMContentLoaded', () => {
 
     backdrop.classList.add('active');
     document.body.style.overflow = 'hidden';
+  }
+
+  // --------------------------------------------------------------------------
+  // Live Order Tracking Modal & API Connector
+  // --------------------------------------------------------------------------
+  function openOrderTrackingModal(initialOrderNum = '') {
+    let trackingModal = document.getElementById('syd-tracking-modal');
+    if (!trackingModal) {
+      const modalEl = document.createElement('div');
+      modalEl.id = 'syd-tracking-modal';
+      modalEl.className = 'syd-checkout-backdrop active';
+      modalEl.style.zIndex = '99999';
+      modalEl.innerHTML = `
+        <div class="syd-checkout-modal" style="max-width: 580px;">
+          <div class="syd-checkout-header">
+            <div>
+              <div class="syd-checkout-pill">✦ LIVE SPICE LOGISTICS</div>
+              <h2 class="syd-checkout-title">Track Your Spice Order</h2>
+            </div>
+            <button type="button" class="syd-checkout-close" onclick="document.getElementById('syd-tracking-modal').remove()">&times;</button>
+          </div>
+          <div class="syd-checkout-body" id="tracking-modal-content" style="padding: 24px;">
+            <div style="display:flex; gap:10px; margin-bottom: 20px;">
+              <input type="text" id="track-order-input" value="${initialOrderNum}" placeholder="Enter Order ID (e.g. SYD-9R1-1812) or Phone" style="flex:1; padding: 10px 14px; border:1px solid #E5E0DA; border-radius:8px; font-family:inherit; font-size:0.9rem; outline:none;">
+              <button type="button" id="btn-fetch-track" style="background:var(--color-terracotta); color:#fff; border:none; padding:10px 18px; border-radius:8px; font-weight:700; cursor:pointer;">Track</button>
+            </div>
+            <div id="track-results-area"></div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modalEl);
+      trackingModal = modalEl;
+
+      document.getElementById('btn-fetch-track').onclick = () => {
+        const val = document.getElementById('track-order-input').value.trim();
+        if (val) executeTrackOrder(val);
+      };
+      document.getElementById('track-order-input').onkeydown = (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const val = document.getElementById('track-order-input').value.trim();
+          if (val) executeTrackOrder(val);
+        }
+      };
+    } else {
+      trackingModal.classList.add('active');
+      if (initialOrderNum) {
+        document.getElementById('track-order-input').value = initialOrderNum;
+      }
+    }
+
+    if (initialOrderNum) {
+      executeTrackOrder(initialOrderNum);
+    }
+  }
+
+  window.openOrderTracking = openOrderTrackingModal;
+
+  async function executeTrackOrder(query) {
+    const area = document.getElementById('track-results-area');
+    if (!area) return;
+    area.innerHTML = '<div style="text-align:center; padding:30px; color:#8E8278;">Looking up order in backend database...</div>';
+
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/api/orders/track?order_id=${encodeURIComponent(query)}`);
+      const json = await res.json();
+      if (json.success && json.order) {
+        const o = json.order;
+        area.innerHTML = `
+          <div style="background:#FAF7F2; border-radius:12px; padding:18px; margin-bottom:20px; border:1px solid #EAE5DE;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <strong style="color:var(--color-terracotta); font-size:1.05rem;">#${o.order_number}</strong>
+              <span style="background:#fff; color:var(--text-dark); padding:3px 10px; border-radius:12px; font-size:0.75rem; font-weight:700; border:1px solid #E5E0DA;">${o.status}</span>
+            </div>
+            <div style="font-size:0.85rem; color:#55483F; margin-bottom:4px;"><strong>Customer:</strong> ${o.customer_name} (${o.phone || o.customer_email})</div>
+            <div style="font-size:0.85rem; color:#55483F; margin-bottom:4px;"><strong>Total:</strong> ₹${o.grand_total} via ${o.payment_method}</div>
+            <div style="font-size:0.8rem; color:#8E8278;"><strong>Dispatch Hub:</strong> Spice Park, Gujarat Direct Dispatch</div>
+          </div>
+
+          <div style="position:relative; padding-left:24px; border-left:2px solid #E5E0DA; margin-left:12px; display:flex; flex-direction:column; gap:20px;">
+            ${o.tracking_steps.map((st, i) => `
+              <div style="position:relative;">
+                <div style="position:absolute; left:-31px; top:0; width:16px; height:16px; border-radius:50%; background:${st.done ? '#10b981' : '#E5E0DA'}; border:3px solid #fff; box-shadow:0 0 0 1px ${st.done ? '#10b981' : '#ccc'};"></div>
+                <div style="font-weight:700; font-size:0.9rem; color:${st.done ? 'var(--text-dark)' : '#999'};">${st.title} ${st.done ? '✓' : ''}</div>
+                <div style="font-size:0.8rem; color:#8E8278; margin-top:2px;">${st.desc}</div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      } else {
+        area.innerHTML = `<div style="text-align:center; padding:30px; color:#ef4444; background:#fef2f2; border-radius:8px;">${json.message || 'No matching order found.'}</div>`;
+      }
+    } catch (err) {
+      area.innerHTML = `<div style="text-align:center; padding:30px; color:#ef4444; background:#fef2f2; border-radius:8px;">Failed to connect to backend server.</div>`;
+    }
   }
 
   // Hook all .btn-checkout buttons across all pages (overriding any inline alerts)
@@ -1432,6 +1528,87 @@ document.addEventListener('DOMContentLoaded', () => {
           populatePDP(productsData['magic-blend']);
         }
       });
+
+    // ------------------------------------------------------------------------
+    // PDP Live Reviews & Rating Loading & Submission
+    // ------------------------------------------------------------------------
+    function loadProductReviews(targetId) {
+      const listEl = document.getElementById('pdp-reviews-list');
+      const avgEl = document.getElementById('pdp-reviews-avg');
+      const countEl = document.getElementById('pdp-reviews-count');
+      if (!listEl) return;
+
+      fetch(`http://127.0.0.1:8000/api/products/${targetId}/reviews`)
+        .then(res => res.json())
+        .then(json => {
+          if (json.success && json.reviews) {
+            if (avgEl) avgEl.textContent = json.average_rating || '5.0';
+            if (countEl) countEl.textContent = `Based on ${json.total_reviews} verified reviews`;
+
+            if (json.reviews.length === 0) {
+              listEl.innerHTML = `<div style="text-align: center; padding: 40px; background: #fff; border-radius: 12px; color: #8E8278;">No customer reviews yet. Be the first to share your tasting notes!</div>`;
+              return;
+            }
+
+            listEl.innerHTML = json.reviews.map(r => `
+              <div style="background:#fff; border-radius:12px; padding:20px; box-shadow:0 2px 10px rgba(0,0,0,0.04); border:1px solid rgba(80,60,45,0.06);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                  <div>
+                    <strong style="color:var(--text-dark); font-size:1rem;">${r.name}</strong>
+                    <span style="display:inline-block; margin-left:8px; font-size:0.75rem; background:#ecfdf5; color:#059669; padding:2px 8px; border-radius:12px; font-weight:700;">✓ Verified Home Cook</span>
+                  </div>
+                  <div style="color:#f59e0b; font-size:0.95rem;">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
+                </div>
+                ${r.title ? `<div style="font-weight:700; font-size:0.95rem; color:var(--text-dark); margin-bottom:6px;">${r.title}</div>` : ''}
+                <p style="font-size:0.9rem; color:#55483F; line-height:1.6; margin-bottom:8px;">${r.comment}</p>
+                <div style="font-size:0.75rem; color:#8E8278;">${r.created_at} • Direct Spice Park Batch</div>
+              </div>
+            `).join('');
+          }
+        })
+        .catch(err => {
+          console.error('Reviews load error:', err);
+        });
+    }
+
+    loadProductReviews(prodId);
+
+    window.handleReviewSubmit = async function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-submit-review');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Submitting...';
+      }
+
+      const name = document.getElementById('review-author').value.trim();
+      const rating = parseInt(document.getElementById('review-rating').value) || 5;
+      const title = document.getElementById('review-title').value.trim();
+      const comment = document.getElementById('review-comment').value.trim();
+
+      try {
+        const res = await fetch(`http://127.0.0.1:8000/api/products/${prodId}/reviews`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, rating, title, comment })
+        });
+        const json = await res.json();
+        if (json.success) {
+          showToast('Thank you! Your verified review has been published.');
+          document.getElementById('pdp-review-form').reset();
+          loadProductReviews(prodId);
+        } else {
+          showToast(json.message || 'Failed to submit review');
+        }
+      } catch (err) {
+        showToast('Network error submitting review');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'Submit Verified Review';
+        }
+      }
+    };
 
     // PDP Quantity Stepper
     let pdpQty = 1;

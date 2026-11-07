@@ -353,6 +353,77 @@
         </div>
       </div>
     </section>
+
+    <!-- VERIFIED CUSTOMER REVIEWS & RATINGS -->
+    <section class="products-catalog-section" style="background-color: var(--color-warm-cream); border-top: 1px solid rgba(80, 60, 45, 0.08); padding: 60px 0;">
+      <div class="container">
+        
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 32px; flex-wrap: wrap; gap: 20px;">
+          <div>
+            <span style="font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-terracotta);">✦ VERIFIED CULINARY FEEDBACK</span>
+            <h2 style="font-family: var(--font-serif); font-size: 2.2rem; color: var(--text-dark); margin-top: 6px;">Customer Reviews &amp; Tasting Notes</h2>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px; background: #fff; padding: 12px 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+            <div style="font-size: 2rem; font-weight: 800; color: var(--color-terracotta); line-height: 1;" id="pdp-reviews-avg">5.0</div>
+            <div>
+              <div style="color: #f59e0b; font-size: 1.1rem; line-height: 1;">★★★★★</div>
+              <div style="font-size: 0.775rem; color: #8E8278; font-weight: 600; margin-top: 4px;" id="pdp-reviews-count">Based on 4 reviews</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 380px; gap: 32px; align-items: start;" class="pdp-reviews-layout">
+          
+          <!-- Live Reviews List -->
+          <div id="pdp-reviews-list" style="display: flex; flex-direction: column; gap: 16px;">
+            <!-- Loaded dynamically from /api/products/{id}/reviews -->
+            <div style="text-align: center; padding: 40px; background: #fff; border-radius: 12px; color: #8E8278;">
+              Loading verified reviews...
+            </div>
+          </div>
+
+          <!-- Submit Review Form Card -->
+          <div style="background: #fff; border-radius: 16px; padding: 28px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid rgba(80, 60, 45, 0.08);">
+            <h3 style="font-family: var(--font-serif); font-size: 1.35rem; color: var(--text-dark); margin-bottom: 6px;">Write a Review</h3>
+            <p style="font-size: 0.85rem; color: #8E8278; margin-bottom: 20px;">Share your kitchen experience and flavor notes with fellow home chefs.</p>
+
+            <form id="pdp-review-form" onsubmit="handleReviewSubmit(event)">
+              <div style="margin-bottom: 14px;">
+                <label style="display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dark); margin-bottom: 6px;">Your Name *</label>
+                <input type="text" id="review-author" required placeholder="e.g. Radhika Sharma" style="width: 100%; padding: 10px 14px; border: 1px solid #E5E0DA; border-radius: 8px; font-family: inherit; font-size: 0.9rem; outline: none;">
+              </div>
+
+              <div style="margin-bottom: 14px;">
+                <label style="display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dark); margin-bottom: 6px;">Rating *</label>
+                <select id="review-rating" style="width: 100%; padding: 10px 14px; border: 1px solid #E5E0DA; border-radius: 8px; font-family: inherit; font-size: 0.9rem; outline: none; background: #fff;">
+                  <option value="5">★★★★★ — Exceptional Purity (5/5)</option>
+                  <option value="4">★★★★☆ — Very Good Aroma (4/5)</option>
+                  <option value="3">★★★☆☆ — Average (3/5)</option>
+                  <option value="2">★★☆☆☆ — Below Expectation (2/5)</option>
+                  <option value="1">★☆☆☆☆ — Poor (1/5)</option>
+                </select>
+              </div>
+
+              <div style="margin-bottom: 14px;">
+                <label style="display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dark); margin-bottom: 6px;">Review Title</label>
+                <input type="text" id="review-title" placeholder="e.g. Real aroma, no fillers!" style="width: 100%; padding: 10px 14px; border: 1px solid #E5E0DA; border-radius: 8px; font-family: inherit; font-size: 0.9rem; outline: none;">
+              </div>
+
+              <div style="margin-bottom: 20px;">
+                <label style="display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dark); margin-bottom: 6px;">Tasting &amp; Cooking Notes *</label>
+                <textarea id="review-comment" required rows="3" placeholder="Tell us how it performed in your dish, its aroma, and freshness..." style="width: 100%; padding: 10px 14px; border: 1px solid #E5E0DA; border-radius: 8px; font-family: inherit; font-size: 0.9rem; outline: none; resize: vertical;"></textarea>
+              </div>
+
+              <button type="submit" id="btn-submit-review" style="width: 100%; background: var(--color-terracotta); color: #fff; border: none; padding: 12px 18px; border-radius: 8px; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.2s;">
+                Submit Verified Review
+              </button>
+            </form>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
   </main>
 
   <!-- SLIDEOUT SHOPPING BAG DRAWER -->
@@ -372,7 +443,7 @@
         <span>Subtotal</span>
         <span>₹590.00</span>
       </div>
-      <button class="btn-checkout" onclick="alert('Thank you! Checkout process connected with SYD Spices order desk.')">Proceed to Checkout</button>
+      <button class="btn-checkout" id="drawer-btn-checkout">Proceed to Checkout</button>
     </div>
   </aside>
 
