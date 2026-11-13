@@ -7,13 +7,17 @@ echo "=== SYD Spices Backend Booting ==="
 if [ -n "$DB_HOST" ] && [ "$DB_CONNECTION" = "mysql" ]; then
     echo "Connecting to MySQL at $DB_HOST..."
     
+    SSL_ARGS=""
+    if [ -n "$MYSQL_ATTR_SSL_CA" ] && [ -f "$MYSQL_ATTR_SSL_CA" ]; then
+        SSL_ARGS="--ssl-ca=$MYSQL_ATTR_SSL_CA"
+    fi
+
     # Check if admins table exists, if not import backup
-    if ! mysql -h "$DB_HOST" -P "${DB_PORT:-3306}" -u "$DB_USERNAME" -p"$DB_PASSWORD" "$DB_DATABASE" -e "DESCRIBE admins;" > /dev/null 2>&1; then
-        echo "Admins table not found. Auto-importing database_backup.sql..."
-        mysql -h "$DB_HOST" -P "${DB_PORT:-3306}" -u "$DB_USERNAME" -p"$DB_PASSWORD" "$DB_DATABASE" < database_backup.sql || true
-        echo "Database imported successfully!"
+    if ! mysql $SSL_ARGS -h "$DB_HOST" -P "${DB_PORT:-3306}" -u "$DB_USERNAME" -p"$DB_PASSWORD" "$DB_DATABASE" -e "DESCRIBE admins;" > /dev/null 2>&1; then
+        echo "Admins table not found or SSL direct import. Checking database..."
+        mysql $SSL_ARGS -h "$DB_HOST" -P "${DB_PORT:-3306}" -u "$DB_USERNAME" -p"$DB_PASSWORD" "$DB_DATABASE" < database_backup.sql 2>/dev/null || true
     else
-        echo "Database already initialized."
+        echo "Database already initialized and connected!"
     fi
 fi
 
@@ -22,8 +26,10 @@ mkdir -p storage/app storage/framework/cache storage/framework/sessions storage/
 chmod -R 777 storage bootstrap/cache
 touch storage/installed
 
-# Clear any stale cached config/routes
+# Clear any stale cached config/routes & discover packages
+php artisan package:discover --ansi || true
 php artisan config:clear || true
+php artisan route:clear || true
 php artisan view:clear || true
 
 # Ensure raw code errors are shown in debug mode

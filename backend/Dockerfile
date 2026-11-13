@@ -31,8 +31,12 @@ COPY . .
 # Set environment
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# Install PHP dependencies without platform blockers
-RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs
+# Ensure storage and cache directories exist before composer runs
+RUN mkdir -p storage/app storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache \
+    && chmod -R 777 storage bootstrap/cache
+
+# Install PHP dependencies without running scripts during build time
+RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs --no-scripts
 
 RUN chmod +x docker-entrypoint.sh
 
