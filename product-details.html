@@ -39,6 +39,14 @@
 
         <!-- Actions -->
         <div class="header-actions">
+          <button class="btn-account" id="account-toggle" aria-label="Customer Account">
+            <svg class="account-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span class="account-btn-label">Sign In</span>
+          </button>
+
           <button class="btn-bag" id="cart-toggle" aria-label="Open Shopping Bag">
             <span>Bag</span>
             <span class="bag-count" id="bag-count">1</span>
@@ -55,6 +63,7 @@
 
   <!-- Mobile Drawer Menu -->
   <nav class="mobile-nav-menu" id="mobile-nav-menu" aria-label="Mobile Navigation">
+    <a href="#" class="nav-item mobile-item mobile-account-link" id="mobile-account-link">👤 My Account</a>
     <a href="index.html" class="nav-item mobile-item">Home</a>
     <a href="about.html" class="nav-item mobile-item">About Us</a>
     <a href="products.html" class="nav-item mobile-item active">Our Spices</a>

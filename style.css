@@ -8743,3 +8743,485 @@ body {
 .btn-success-close:hover {
   background: #1e3d1a;
 }
+
+
+/* ==========================================================================
+   SYD SPICES - CUSTOMER ACCOUNT, AUTH & PORTAL STYLES
+   ========================================================================== */
+
+/* Navbar Account Button */
+.btn-account {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 9999px;
+  padding: 8px 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #FFFFFF;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: inherit;
+  outline: none;
+}
+
+.btn-account:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.btn-account.is-logged-in {
+  background: rgba(45, 90, 39, 0.28);
+  border-color: rgba(45, 90, 39, 0.45);
+}
+
+.btn-account.is-logged-in:hover {
+  background: rgba(45, 90, 39, 0.4);
+  border-color: rgba(45, 90, 39, 0.6);
+}
+
+.account-avatar-badge {
+  background: var(--color-terracotta, #C25934);
+  color: #FFFFFF;
+  font-size: 0.72rem;
+  font-weight: 800;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.account-btn-label {
+  white-space: nowrap;
+}
+
+/* Modal Backdrop & Container */
+.syd-account-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(18, 14, 11, 0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 10000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.syd-account-backdrop.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.syd-account-modal {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  max-height: 92vh;
+  background-color: #FFFFFF;
+  border-radius: 20px;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: translateY(20px) scale(0.97);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(80, 60, 45, 0.12);
+}
+
+.syd-account-backdrop.active .syd-account-modal {
+  transform: translateY(0) scale(1);
+}
+
+.syd-account-header {
+  padding: 18px 24px;
+  background: #FAF7F2;
+  border-bottom: 1px solid rgba(80, 60, 45, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.syd-account-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.syd-account-header-left img {
+  height: 38px;
+  width: auto;
+  object-fit: contain;
+}
+
+.syd-account-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2B231D;
+  margin: 0;
+}
+
+.syd-account-subtitle {
+  font-size: 0.78rem;
+  color: #7D736A;
+  margin-top: 2px;
+}
+
+.syd-account-close-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(80, 60, 45, 0.15);
+  background: #FFFFFF;
+  color: #4A3E36;
+  font-size: 1.4rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.syd-account-close-btn:hover {
+  background: #C25934;
+  color: #FFFFFF;
+  border-color: #C25934;
+}
+
+.syd-account-body {
+  padding: 24px;
+  overflow-y: auto;
+}
+
+/* Auth Navigation Tabs (Sign In vs Register) */
+.syd-auth-nav {
+  display: flex;
+  gap: 8px;
+  background: #FAF7F2;
+  padding: 6px;
+  border-radius: 12px;
+  margin-bottom: 22px;
+  border: 1px solid rgba(80, 60, 45, 0.08);
+}
+
+.syd-auth-tab-btn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #7D736A;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.syd-auth-tab-btn.active {
+  background: #FFFFFF;
+  color: #C25934;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* Quick Demo Login Pill Banner */
+.syd-demo-login-box {
+  background: #EEF7EE;
+  border: 1.5px dashed #2D5A27;
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.syd-demo-btn {
+  background: #2D5A27;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.syd-demo-btn:hover {
+  background: #1e3d1a;
+}
+
+/* Customer Portal (Logged In State) */
+.syd-portal-hero {
+  background: linear-gradient(135deg, #FAF7F2 0%, #F5EFEB 100%);
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(80, 60, 45, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.syd-portal-user-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.syd-portal-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #C25934 0%, #8C3B1E 100%);
+  color: #FFFFFF;
+  font-size: 1.25rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(194, 89, 52, 0.35);
+  flex-shrink: 0;
+}
+
+.syd-portal-name {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #2B231D;
+  margin: 0;
+}
+
+.syd-portal-sub {
+  font-size: 0.76rem;
+  color: #7D736A;
+  margin-top: 3px;
+}
+
+.btn-portal-logout {
+  padding: 7px 14px;
+  border-radius: 8px;
+  background: #FFFFFF;
+  border: 1.5px solid rgba(194, 89, 52, 0.4);
+  color: #C25934;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-portal-logout:hover {
+  background: #C25934;
+  color: #FFFFFF;
+  border-color: #C25934;
+}
+
+/* Portal Tabs: Orders vs Profile vs Wishlist */
+.syd-portal-nav {
+  display: flex;
+  gap: 10px;
+  border-bottom: 1.5px solid rgba(80, 60, 45, 0.12);
+  margin-bottom: 20px;
+}
+
+.syd-portal-tab-btn {
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #7D736A;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.syd-portal-tab-btn.active {
+  color: #C25934;
+  border-bottom-color: #C25934;
+}
+
+/* Order Cards in Portal */
+.syd-account-orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.syd-order-card {
+  background: #FAF7F2;
+  border-radius: 12px;
+  padding: 16px 18px;
+  border: 1px solid rgba(80, 60, 45, 0.1);
+  transition: box-shadow 0.2s;
+}
+
+.syd-order-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.syd-order-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.syd-order-num {
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: #C25934;
+}
+
+.syd-order-status-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.syd-order-status-badge.processing {
+  background: rgba(194, 89, 52, 0.12);
+  color: #C25934;
+  border: 1px solid rgba(194, 89, 52, 0.3);
+}
+
+.syd-order-status-badge.dispatched {
+  background: rgba(45, 90, 39, 0.12);
+  color: #2D5A27;
+  border: 1px solid rgba(45, 90, 39, 0.3);
+}
+
+.syd-order-status-badge.completed,
+.syd-order-status-badge.delivered {
+  background: #EEF7EE;
+  color: #2D5A27;
+  border: 1px solid #2D5A27;
+}
+
+.syd-order-card-meta {
+  font-size: 0.8rem;
+  color: #7D736A;
+  margin-bottom: 12px;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.syd-order-items-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 0;
+  border-top: 1px dashed rgba(80, 60, 45, 0.15);
+  border-bottom: 1px dashed rgba(80, 60, 45, 0.15);
+  margin-bottom: 12px;
+}
+
+.syd-order-preview-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  color: #4A3E36;
+}
+
+.syd-order-preview-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.syd-order-preview-thumb {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  object-fit: cover;
+  background: #FFF;
+  border: 1px solid rgba(80, 60, 45, 0.1);
+}
+
+.syd-order-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.syd-order-total-price {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #2B231D;
+}
+
+.btn-track-order-mini {
+  padding: 6px 14px;
+  border-radius: 6px;
+  background: #2D5A27;
+  color: #FFFFFF;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.btn-track-order-mini:hover {
+  background: #1e3d1a;
+}
+
+.syd-portal-empty {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.syd-portal-empty-icon {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+.syd-portal-empty-text {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.2rem;
+  color: #2B231D;
+  margin-bottom: 6px;
+}
+
+.syd-portal-empty-sub {
+  font-size: 0.82rem;
+  color: #7D736A;
+  margin-bottom: 20px;
+}

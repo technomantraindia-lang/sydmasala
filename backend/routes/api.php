@@ -1171,6 +1171,7 @@ $registerSydApiEndpoints = function () {
                     'first_name'        => $firstName,
                     'last_name'         => $lastName,
                     'phone'             => $phone ?? $existing->phone,
+                    'password'          => Hash::make($rawPassword),
                     'updated_at'        => now(),
                 ]);
                 $customerId = $existing->id;
@@ -1191,12 +1192,48 @@ $registerSydApiEndpoints = function () {
                 ]);
             }
 
+            // Save default shipping address if provided
+            $address = trim($request->input('address', ''));
+            $city = trim($request->input('city', 'Ahmedabad'));
+            $state = trim($request->input('state', 'Gujarat'));
+            $pincode = trim($request->input('pincode', $request->input('postcode', '384170')));
+
+            if (!empty($address)) {
+                DB::table('addresses')->updateOrInsert(
+                    ['customer_id' => $customerId, 'address_type' => 'customer', 'default_address' => 1],
+                    [
+                        'first_name'       => $firstName,
+                        'last_name'        => $lastName,
+                        'address'          => $address,
+                        'city'             => $city,
+                        'state'            => $state,
+                        'country'          => 'IN',
+                        'postcode'         => $pincode,
+                        'email'            => $email,
+                        'phone'            => $phone,
+                        'use_for_shipping' => 1,
+                        'updated_at'       => now(),
+                    ]
+                );
+            }
+
             $customer = DB::table('customers')->where('id', $customerId)->first();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Customer registered successfully.',
-                'data'    => $customer,
+                'message' => 'Account created successfully! Welcome to SYD Spices.',
+                'data'    => [
+                    'id'         => $customer->id,
+                    'first_name' => $customer->first_name,
+                    'last_name'  => $customer->last_name,
+                    'name'       => trim($customer->first_name . ' ' . $customer->last_name),
+                    'email'      => $customer->email,
+                    'phone'      => $customer->phone,
+                    'address'    => $address,
+                    'city'       => $city,
+                    'state'      => $state,
+                    'pincode'    => $pincode,
+                ],
             ], 201);
         } catch (\Exception $e) {
             report($e);
@@ -1230,26 +1267,156 @@ $registerSydApiEndpoints = function () {
 
             if (!empty($password) && !empty($customer->password)) {
                 if (!Hash::check($password, $customer->password) && $password !== 'user123' && $password !== 'admin123') {
-                    return response()->json(['success' => false, 'message' => 'Incorrect password.'], 401);
+                    return response()->json(['success' => false, 'message' => 'Incorrect password. Please verify and try again.'], 401);
                 }
             }
 
+            // Retrieve saved delivery address
+            $savedAddr = DB::table('addresses')
+                ->where('customer_id', $customer->id)
+                ->orderBy('default_address', 'desc')
+                ->orderBy('id', 'desc')
+                ->first();
+
             return response()->json([
                 'success' => true,
-                'message' => 'Login successful',
+                'message' => 'Welcome back, ' . $customer->first_name . '!',
                 'data'    => [
                     'id'         => $customer->id,
                     'first_name' => $customer->first_name,
                     'last_name'  => $customer->last_name,
                     'name'       => trim($customer->first_name . ' ' . $customer->last_name),
                     'email'      => $customer->email,
-                    'phone'      => $customer->phone,
+                    'phone'      => $customer->phone ?? ($savedAddr ? $savedAddr->phone : ''),
+                    'address'    => $savedAddr ? $savedAddr->address : '',
+                    'city'       => $savedAddr ? $savedAddr->city : 'Ahmedabad',
+                    'state'      => $savedAddr ? $savedAddr->state : 'Gujarat',
+                    'pincode'    => $savedAddr ? $savedAddr->postcode : '384170',
                 ]
             ]);
         } catch (\Exception $e) {
             report($e);
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
+    });
+
+    // 7B. Customer Profile Details
+    Route::get('/customers/{id}/profile', function ($id) {
+        $customer = DB::table('customers')->where('id', $id)->orWhere('email', $id)->first();
+        if (!$customer) {
+            return response()->json(['success' => false, 'message' => 'Customer account not found.'], 404);
+        }
+
+        $savedAddr = DB::table('addresses')
+            ->where('customer_id', $customer->id)
+            ->orderBy('default_address', 'desc')
+            ->orderBy('id', 'desc')
+            ->first();
+
+        $ordersCount = DB::table('orders')->where('customer_id', $customer->id)->count();
+        $totalSpent = (float) DB::table('orders')->where('customer_id', $customer->id)->where('status', '!=', 'cancelled')->sum('grand_total');
+
+        return response()->json([
+            'success' => true,
+            'data'    => [
+                'id'           => $customer->id,
+                'first_name'   => $customer->first_name,
+                'last_name'    => $customer->last_name,
+                'name'         => trim($customer->first_name . ' ' . $customer->last_name),
+                'email'        => $customer->email,
+                'phone'        => $customer->phone ?? ($savedAddr ? $savedAddr->phone : ''),
+                'address'      => $savedAddr ? $savedAddr->address : '',
+                'city'         => $savedAddr ? $savedAddr->city : 'Ahmedabad',
+                'state'        => $savedAddr ? $savedAddr->state : 'Gujarat',
+                'pincode'      => $savedAddr ? $savedAddr->postcode : '384170',
+                'orders_count' => $ordersCount,
+                'total_spent'  => round($totalSpent, 2),
+                'member_since' => date('d M Y', strtotime($customer->created_at ?? now())),
+            ]
+        ]);
+    });
+
+    // 7C. Update Customer Profile & Address
+    Route::post('/customers/{id}/profile', function (Request $request, $id) {
+        $customer = DB::table('customers')->where('id', $id)->orWhere('email', $id)->first();
+        if (!$customer) {
+            return response()->json(['success' => false, 'message' => 'Customer account not found.'], 404);
+        }
+
+        $fullName = trim($request->input('name', ''));
+        if (!empty($fullName)) {
+            $parts = preg_split('/\s+/', $fullName, 2);
+            $firstName = $parts[0] ?? $customer->first_name;
+            $lastName = $parts[1] ?? $customer->last_name;
+        } else {
+            $firstName = trim($request->input('first_name', $customer->first_name));
+            $lastName = trim($request->input('last_name', $customer->last_name));
+        }
+
+        $phone = trim($request->input('phone', $customer->phone));
+        $updateData = [
+            'first_name' => $firstName,
+            'last_name'  => $lastName,
+            'phone'      => $phone,
+            'updated_at' => now(),
+        ];
+
+        $newPassword = $request->input('password');
+        if (!empty($newPassword) && strlen($newPassword) >= 4) {
+            $updateData['password'] = Hash::make($newPassword);
+        }
+
+        DB::table('customers')->where('id', $customer->id)->update($updateData);
+
+        $address = trim($request->input('address', ''));
+        $city = trim($request->input('city', 'Ahmedabad'));
+        $state = trim($request->input('state', 'Gujarat'));
+        $pincode = trim($request->input('pincode', $request->input('postcode', '384170')));
+
+        if (!empty($address)) {
+            DB::table('addresses')->updateOrInsert(
+                ['customer_id' => $customer->id, 'address_type' => 'customer', 'default_address' => 1],
+                [
+                    'first_name'       => $firstName,
+                    'last_name'        => $lastName,
+                    'address'          => $address,
+                    'city'             => $city,
+                    'state'            => $state,
+                    'country'          => 'IN',
+                    'postcode'         => $pincode,
+                    'email'            => $customer->email,
+                    'phone'            => $phone,
+                    'use_for_shipping' => 1,
+                    'updated_at'       => now(),
+                ]
+            );
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Profile and address updated successfully!',
+            'data'    => [
+                'id'         => $customer->id,
+                'first_name' => $firstName,
+                'last_name'  => $lastName,
+                'name'       => trim($firstName . ' ' . $lastName),
+                'email'      => $customer->email,
+                'phone'      => $phone,
+                'address'    => $address,
+                'city'       => $city,
+                'state'      => $state,
+                'pincode'    => $pincode,
+            ]
+        ]);
+    });
+
+    // 7D. Forgot Password Simulation
+    Route::post('/customers/forgot-password', function (Request $request) {
+        $email = trim(strtolower($request->input('email', '')));
+        return response()->json([
+            'success' => true,
+            'message' => 'Password reset instructions have been dispatched to ' . ($email ?: 'your email address') . '.'
+        ]);
     });
 
     // 8. Customer Cart Sync
@@ -1378,12 +1545,19 @@ $registerSydApiEndpoints = function () {
             }
             $grandTotal = (float) $request->input('grand_total');
 
-            // Find or create customer (check both email and phone to prevent duplicate key violations)
-            $customer = DB::table('customers')->where('email', $email);
-            if (!empty($phone)) {
-                $customer = $customer->orWhere('phone', $phone);
+            // Find or create customer (support passed customer_id or match email/phone)
+            $reqCustId = $request->input('customer_id');
+            $customer = null;
+            if (!empty($reqCustId) && is_numeric($reqCustId)) {
+                $customer = DB::table('customers')->where('id', $reqCustId)->first();
             }
-            $customer = $customer->first();
+            if (!$customer) {
+                $customer = DB::table('customers')->where('email', $email);
+                if (!empty($phone)) {
+                    $customer = $customer->orWhere('phone', $phone);
+                }
+                $customer = $customer->first();
+            }
 
             if ($customer) {
                 $customerId = $customer->id;
@@ -1773,28 +1947,38 @@ $registerSydApiEndpoints = function () {
     Route::get('/customers/{id}/orders', function ($id) {
         $customer = DB::table('customers')->where('id', $id)->orWhere('email', $id)->first();
         if (!$customer) {
-            return response()->json(['success' => false, 'message' => 'Customer not found.'], 404);
+            return response()->json(['success' => false, 'message' => 'Customer account not found.'], 404);
         }
 
         $orders = DB::table('orders')->where('customer_id', $customer->id)->orderBy('id', 'desc')->get();
         $orderIds = $orders->pluck('id');
         $items = DB::table('order_items')->whereIn('order_id', $orderIds)->get()->groupBy('order_id');
+        $payments = DB::table('order_payment')->whereIn('order_id', $orderIds)->get()->keyBy('order_id');
+        $addresses = DB::table('addresses')->whereIn('order_id', $orderIds)->where('address_type', 'order_shipping')->get()->keyBy('order_id');
 
         return response()->json([
             'success' => true,
-            'orders'  => $orders->map(function ($o) use ($items) {
+            'orders'  => $orders->map(function ($o) use ($items, $payments, $addresses) {
                 return [
-                    'id'           => $o->id,
-                    'order_number' => $o->increment_id,
-                    'grand_total'  => (float) $o->grand_total,
-                    'status'       => $o->status,
-                    'items_count'  => $o->total_item_count,
-                    'created_at'   => date('d M Y', strtotime($o->created_at)),
-                    'items'        => ($items[$o->id] ?? collect([]))->map(fn($it) => [
-                        'name'     => $it->name,
-                        'quantity' => (int) $it->qty_ordered,
-                        'price'    => (float) $it->price,
-                    ]),
+                    'id'               => $o->id,
+                    'order_number'     => $o->increment_id,
+                    'grand_total'      => (float) $o->grand_total,
+                    'status'           => $o->status ?: 'processing',
+                    'status_label'     => ucfirst($o->status ?: 'Processing'),
+                    'payment_method'   => $payments[$o->id]->method_title ?? '⚡ Free Test Order (No Payment)',
+                    'shipping_address' => isset($addresses[$o->id]) ? ($addresses[$o->id]->address . ', ' . $addresses[$o->id]->city . ' - ' . $addresses[$o->id]->postcode) : 'Gujarat Direct Dispatch',
+                    'tracking_url'     => "http://127.0.0.1:3000/products.html?track=" . $o->increment_id,
+                    'items_count'      => $o->total_item_count,
+                    'created_at'       => date('d M Y', strtotime($o->created_at)),
+                    'items'            => ($items[$o->id] ?? collect([]))->map(function ($it) {
+                        $img = DB::table('product_images')->where('product_id', $it->product_id)->orderBy('position', 'asc')->value('path');
+                        return [
+                            'name'     => $it->name,
+                            'quantity' => (int) $it->qty_ordered,
+                            'price'    => (float) $it->price,
+                            'image'    => $img ?: 'assets/spices.png',
+                        ];
+                    }),
                 ];
             })
         ]);

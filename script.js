@@ -297,6 +297,721 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initial cart UI render
   updateCartUI();
 
+  // ==========================================================================
+  // 3A. CUSTOMER ACCOUNT & AUTHENTICATION PORTAL (E-COMMERCE SUITE)
+  // ==========================================================================
+  function getLoggedInCustomer() {
+    try {
+      const raw = localStorage.getItem('syd_customer_auth');
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function setLoggedInCustomer(customer) {
+    if (customer) {
+      localStorage.setItem('syd_customer_auth', JSON.stringify(customer));
+      if (customer.name) localStorage.setItem('syd_customer_name', customer.name);
+      if (customer.email) localStorage.setItem('syd_customer_email', customer.email);
+      if (customer.phone) localStorage.setItem('syd_customer_phone', customer.phone);
+      if (customer.address) localStorage.setItem('syd_customer_address', customer.address);
+      if (customer.pincode) localStorage.setItem('syd_customer_pincode', customer.pincode);
+    } else {
+      localStorage.removeItem('syd_customer_auth');
+    }
+    updateAccountButtonsUI();
+  }
+
+  function logoutCustomer() {
+    setLoggedInCustomer(null);
+    showToast('You have been signed out successfully.');
+    closeAccountModal();
+  }
+  window.logoutCustomer = logoutCustomer;
+
+  function updateAccountButtonsUI() {
+    const customer = getLoggedInCustomer();
+    document.querySelectorAll('.btn-account').forEach(btn => {
+      if (customer) {
+        const fLetter = customer.first_name?.[0] || customer.name?.[0] || 'C';
+        const lLetter = customer.last_name?.[0] || '';
+        const initials = (fLetter + lLetter).toUpperCase();
+        btn.classList.add('is-logged-in');
+        btn.innerHTML = `
+          <span class="account-avatar-badge">${initials}</span>
+          <span class="account-btn-label">${customer.first_name || customer.name.split(' ')[0]}</span>
+        `;
+      } else {
+        btn.classList.remove('is-logged-in');
+        btn.innerHTML = `
+          <svg class="account-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span class="account-btn-label">Sign In</span>
+        `;
+      }
+    });
+
+    document.querySelectorAll('.mobile-account-link').forEach(link => {
+      if (customer) {
+        link.textContent = `👤 My Account (${customer.first_name || customer.name.split(' ')[0]})`;
+      } else {
+        link.textContent = '👤 Sign In / Register';
+      }
+    });
+  }
+
+  function ensureAccountModal() {
+    let backdrop = document.getElementById('syd-account-backdrop');
+    if (!backdrop) {
+      backdrop = document.createElement('div');
+      backdrop.id = 'syd-account-backdrop';
+      backdrop.className = 'syd-account-backdrop';
+      backdrop.innerHTML = `
+        <div class="syd-account-modal" role="dialog" aria-modal="true" aria-labelledby="account-modal-title">
+          <div class="syd-account-header">
+            <div class="syd-account-header-left">
+              <img src="assets/main logo .png" alt="SYD Spices Logo">
+              <div>
+                <h2 class="syd-account-title" id="account-modal-title">Customer Kitchen Account</h2>
+                <div class="syd-account-subtitle" id="account-modal-subtitle">Pure Indian Spices • Direct Mandi Dispatch</div>
+              </div>
+            </div>
+            <button type="button" class="syd-account-close-btn" id="syd-account-close" aria-label="Close Account Modal">&times;</button>
+          </div>
+          <div class="syd-account-body" id="syd-account-body"></div>
+        </div>
+      `;
+      document.body.appendChild(backdrop);
+
+      backdrop.addEventListener('click', (e) => {
+        if (e.target === backdrop) closeAccountModal();
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && backdrop.classList.contains('active')) {
+          closeAccountModal();
+        }
+      });
+    }
+    return backdrop;
+  }
+
+  function closeAccountModal() {
+    const backdrop = document.getElementById('syd-account-backdrop');
+    if (backdrop) {
+      backdrop.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  }
+
+  function openAccountModal(initialTab = null) {
+    const backdrop = ensureAccountModal();
+    const closeBtn = document.getElementById('syd-account-close');
+    if (closeBtn) closeBtn.onclick = closeAccountModal;
+
+    const customer = getLoggedInCustomer();
+    if (customer) {
+      renderCustomerPortal(initialTab || 'orders');
+    } else {
+      renderAuthViews(initialTab || 'login');
+    }
+
+    backdrop.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  window.openAccountModal = openAccountModal;
+
+  // Render Logged-Out Views: Sign In, Register, Forgot Password
+  function renderAuthViews(activeTab = 'login') {
+    const modalBody = document.getElementById('syd-account-body');
+    const modalTitle = document.getElementById('account-modal-title');
+    const modalSub = document.getElementById('account-modal-subtitle');
+    if (!modalBody) return;
+
+    if (activeTab === 'forgot') {
+      if (modalTitle) modalTitle.textContent = 'Reset Password';
+      if (modalSub) modalSub.textContent = 'Enter your email to receive recovery instructions';
+      modalBody.innerHTML = `
+        <div style="max-width: 440px; margin: 0 auto; padding: 10px 0;">
+          <form id="syd-forgot-form">
+            <p style="font-size: 0.85rem; color: #5A4E45; margin-bottom: 20px; line-height: 1.5;">
+              Enter the email address registered with your SYD Spices account and we will send you a secure password reset link.
+            </p>
+            <div class="syd-form-group">
+              <label class="syd-form-label">Email Address <span class="req">*</span></label>
+              <input type="email" id="forgot-email" class="syd-form-input" placeholder="e.g. aarav@sydspices.com" required>
+            </div>
+            <button type="submit" class="btn-confirm-order" style="margin-top: 10px;">
+              <span>Send Reset Link</span> &rarr;
+            </button>
+            <div style="text-align: center; margin-top: 18px; font-size: 0.82rem;">
+              <a href="#" id="link-back-to-login" style="color: #C25934; font-weight: 700; text-decoration: none;">&larr; Back to Sign In</a>
+            </div>
+          </form>
+        </div>
+      `;
+
+      document.getElementById('link-back-to-login')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        renderAuthViews('login');
+      });
+
+      document.getElementById('syd-forgot-form')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const em = document.getElementById('forgot-email').value.trim();
+        try {
+          const res = await fetch(`${API_BASE_URL}/customers/forgot-password`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({ email: em })
+          });
+          const json = await res.json();
+          showToast(json.message || 'Password reset link sent!');
+          renderAuthViews('login');
+        } catch (err) {
+          showToast('Password reset link sent to ' + em);
+          renderAuthViews('login');
+        }
+      });
+      return;
+    }
+
+    if (modalTitle) modalTitle.textContent = activeTab === 'login' ? 'Customer Kitchen Sign In' : 'Create Customer Account';
+    if (modalSub) modalSub.textContent = 'Pure Indian Spices • Express Checkout • Order Tracking';
+
+    modalBody.innerHTML = `
+      <!-- Auth Switcher Tabs -->
+      <div class="syd-auth-nav">
+        <button type="button" class="syd-auth-tab-btn ${activeTab === 'login' ? 'active' : ''}" id="tab-auth-login">Sign In</button>
+        <button type="button" class="syd-auth-tab-btn ${activeTab === 'register' ? 'active' : ''}" id="tab-auth-register">Create Account</button>
+      </div>
+
+      ${activeTab === 'login' ? `
+        <!-- Quick 1-Click Demo Testing Login Box -->
+        <div class="syd-demo-login-box">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 1.2rem;">⚡</span>
+            <div>
+              <strong style="color: #2D5A27; font-size: 0.82rem; display: block;">Instant Demo Login Available</strong>
+              <span style="font-size: 0.72rem; color: #4A3E36;">Log in as test customer Aarav Patel with 1 click.</span>
+            </div>
+          </div>
+          <button type="button" class="syd-demo-btn" id="btn-demo-quick-login">⚡ 1-Click Demo Login</button>
+        </div>
+
+        <form id="syd-login-form">
+          <div class="syd-form-group">
+            <label class="syd-form-label">Email or Phone Number <span class="req">*</span></label>
+            <input type="text" id="login-identifier" class="syd-form-input" placeholder="e.g. aarav@sydspices.com or 9876543210" required>
+          </div>
+
+          <div class="syd-form-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+              <label class="syd-form-label" style="margin-bottom: 0;">Password <span class="req">*</span></label>
+              <a href="#" id="link-forgot-pw" style="font-size: 0.75rem; color: #C25934; font-weight: 600; text-decoration: none;">Forgot Password?</a>
+            </div>
+            <input type="password" id="login-password" class="syd-form-input" placeholder="Enter password" required>
+          </div>
+
+          <button type="submit" class="btn-confirm-order" id="btn-login-submit" style="margin-top: 18px;">
+            <span>Sign In to Kitchen</span> &rarr;
+          </button>
+
+          <div style="text-align: center; margin-top: 16px; font-size: 0.82rem; color: #7D736A;">
+            New to SYD Spices? <a href="#" id="link-switch-to-register" style="color: #C25934; font-weight: 700; text-decoration: none;">Create an account</a>
+          </div>
+        </form>
+      ` : `
+        <form id="syd-register-form">
+          <div class="syd-form-group">
+            <label class="syd-form-label">Full Name <span class="req">*</span></label>
+            <input type="text" id="reg-name" class="syd-form-input" placeholder="e.g. Aarav Patel" required>
+          </div>
+
+          <div class="syd-form-row">
+            <div class="syd-form-group">
+              <label class="syd-form-label">Email Address <span class="req">*</span></label>
+              <input type="email" id="reg-email" class="syd-form-input" placeholder="aarav@example.com" required>
+            </div>
+            <div class="syd-form-group">
+              <label class="syd-form-label">Phone / WhatsApp <span class="req">*</span></label>
+              <input type="tel" id="reg-phone" class="syd-form-input" placeholder="+91 98765 43210" required>
+            </div>
+          </div>
+
+          <div class="syd-form-group">
+            <label class="syd-form-label">Delivery Street Address</label>
+            <input type="text" id="reg-address" class="syd-form-input" placeholder="House/Flat No., Street, Landmark">
+          </div>
+
+          <div class="syd-form-row">
+            <div class="syd-form-group">
+              <label class="syd-form-label">City & State</label>
+              <input type="text" id="reg-city" class="syd-form-input" placeholder="Ahmedabad, Gujarat" value="Ahmedabad, Gujarat">
+            </div>
+            <div class="syd-form-group">
+              <label class="syd-form-label">Postal Pincode</label>
+              <input type="text" id="reg-pincode" class="syd-form-input" placeholder="384170" maxlength="6" value="384170">
+            </div>
+          </div>
+
+          <div class="syd-form-group">
+            <label class="syd-form-label">Choose Password <span class="req">*</span></label>
+            <input type="password" id="reg-password" class="syd-form-input" placeholder="Minimum 4 characters" minlength="4" required>
+          </div>
+
+          <button type="submit" class="btn-confirm-order" id="btn-reg-submit" style="margin-top: 18px;">
+            <span>Create Account &amp; Proceed</span> &rarr;
+          </button>
+
+          <div style="text-align: center; margin-top: 16px; font-size: 0.82rem; color: #7D736A;">
+            Already have an account? <a href="#" id="link-switch-to-login" style="color: #C25934; font-weight: 700; text-decoration: none;">Sign In</a>
+          </div>
+        </form>
+      `}
+    `;
+
+    // Hook tab switches
+    document.getElementById('tab-auth-login')?.addEventListener('click', () => renderAuthViews('login'));
+    document.getElementById('tab-auth-register')?.addEventListener('click', () => renderAuthViews('register'));
+    document.getElementById('link-switch-to-register')?.addEventListener('click', (e) => { e.preventDefault(); renderAuthViews('register'); });
+    document.getElementById('link-switch-to-login')?.addEventListener('click', (e) => { e.preventDefault(); renderAuthViews('login'); });
+    document.getElementById('link-forgot-pw')?.addEventListener('click', (e) => { e.preventDefault(); renderAuthViews('forgot'); });
+
+    // Demo Quick Login
+    document.getElementById('btn-demo-quick-login')?.addEventListener('click', async () => {
+      const idInput = document.getElementById('login-identifier');
+      const pwInput = document.getElementById('login-password');
+      if (idInput && pwInput) {
+        idInput.value = 'aarav@sydspices.com';
+        pwInput.value = 'user123';
+        document.getElementById('syd-login-form')?.dispatchEvent(new Event('submit'));
+      }
+    });
+
+    // Login Form Submit
+    document.getElementById('syd-login-form')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('btn-login-submit');
+      const identifier = document.getElementById('login-identifier').value.trim();
+      const password = document.getElementById('login-password').value;
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<span>Signing In...</span>`;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/customers/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ email: identifier, password: password })
+        });
+        const result = await res.json();
+        if (res.ok && result.success) {
+          setLoggedInCustomer(result.data);
+          showToast(result.message || 'Signed in successfully!');
+          renderCustomerPortal('orders');
+        } else {
+          throw new Error(result.message || 'Login failed. Please check your credentials.');
+        }
+      } catch (err) {
+        showToast(err.message || 'Could not connect to authentication desk.');
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = `<span>Sign In to Kitchen</span> &rarr;`;
+        }
+      }
+    });
+
+    // Register Form Submit
+    document.getElementById('syd-register-form')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('btn-reg-submit');
+      const name = document.getElementById('reg-name').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const phone = document.getElementById('reg-phone').value.trim();
+      const address = document.getElementById('reg-address').value.trim();
+      const city = document.getElementById('reg-city').value.trim();
+      const pincode = document.getElementById('reg-pincode').value.trim();
+      const password = document.getElementById('reg-password').value;
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<span>Creating Account...</span>`;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/customers/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ name, email, phone, address, city, pincode, password })
+        });
+        const result = await res.json();
+        if (res.ok && result.success) {
+          setLoggedInCustomer(result.data);
+          showToast('Account created successfully! Welcome to SYD Spices.');
+          renderCustomerPortal('orders');
+        } else {
+          throw new Error(result.message || 'Registration could not be completed.');
+        }
+      } catch (err) {
+        showToast(err.message || 'Registration failed.');
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = `<span>Create Account &amp; Proceed</span> &rarr;`;
+        }
+      }
+    });
+  }
+
+  // Render Logged-In Customer Portal: Orders, Address & Profile, Wishlist
+  async function renderCustomerPortal(activeTab = 'orders') {
+    const modalBody = document.getElementById('syd-account-body');
+    const modalTitle = document.getElementById('account-modal-title');
+    const modalSub = document.getElementById('account-modal-subtitle');
+    const customer = getLoggedInCustomer();
+    if (!modalBody || !customer) return;
+
+    if (modalTitle) modalTitle.textContent = 'My Customer Portal';
+    if (modalSub) modalSub.textContent = 'Track Orders • Delivery Addresses • Pure Spice Reserve';
+
+    const fLetter = customer.first_name?.[0] || customer.name?.[0] || 'C';
+    const lLetter = customer.last_name?.[0] || '';
+    const initials = (fLetter + lLetter).toUpperCase();
+
+    modalBody.innerHTML = `
+      <!-- Customer Greeting Banner -->
+      <div class="syd-portal-hero">
+        <div class="syd-portal-user-meta">
+          <div class="syd-portal-avatar">${initials}</div>
+          <div>
+            <h3 class="syd-portal-name">Welcome, ${customer.name || customer.first_name}!</h3>
+            <div class="syd-portal-sub">
+              ${customer.email} ${customer.phone ? `&bull; ${customer.phone}` : ''}
+            </div>
+          </div>
+        </div>
+        <button type="button" class="btn-portal-logout" id="btn-portal-signout">Sign Out</button>
+      </div>
+
+      <!-- Portal Tabs -->
+      <div class="syd-portal-nav">
+        <button type="button" class="syd-portal-tab-btn ${activeTab === 'orders' ? 'active' : ''}" id="tab-portal-orders">
+          <span>📦 My Orders</span>
+        </button>
+        <button type="button" class="syd-portal-tab-btn ${activeTab === 'profile' ? 'active' : ''}" id="tab-portal-profile">
+          <span>📍 Saved Address &amp; Profile</span>
+        </button>
+        <button type="button" class="syd-portal-tab-btn ${activeTab === 'wishlist' ? 'active' : ''}" id="tab-portal-wishlist">
+          <span>⭐ Favourites</span>
+        </button>
+      </div>
+
+      <!-- Tab Content Area -->
+      <div id="syd-portal-tab-content">
+        <div style="text-align: center; padding: 40px; color: #7D736A;">
+          Loading your details...
+        </div>
+      </div>
+    `;
+
+    document.getElementById('btn-portal-signout')?.addEventListener('click', logoutCustomer);
+    document.getElementById('tab-portal-orders')?.addEventListener('click', () => renderCustomerPortal('orders'));
+    document.getElementById('tab-portal-profile')?.addEventListener('click', () => renderCustomerPortal('profile'));
+    document.getElementById('tab-portal-wishlist')?.addEventListener('click', () => renderCustomerPortal('wishlist'));
+
+    const tabContent = document.getElementById('syd-portal-tab-content');
+
+    // 1. ORDERS TAB
+    if (activeTab === 'orders') {
+      try {
+        const res = await fetch(`${API_BASE_URL}/customers/${customer.id}/orders`);
+        const data = await res.json();
+        const orders = data.orders || [];
+
+        if (orders.length === 0) {
+          tabContent.innerHTML = `
+            <div class="syd-portal-empty">
+              <div class="syd-portal-empty-icon">🛍️</div>
+              <h4 class="syd-portal-empty-text">No Orders Placed Yet</h4>
+              <p class="syd-portal-empty-sub">Explore our single-origin whole spices and authentic hand-roasted blends.</p>
+              <a href="products.html" class="btn-success-close" style="text-decoration:none;" onclick="closeAccountModal()">Explore Spices</a>
+            </div>
+          `;
+        } else {
+          tabContent.innerHTML = `
+            <div class="syd-account-orders-list">
+              ${orders.map(o => `
+                <div class="syd-order-card">
+                  <div class="syd-order-card-header">
+                    <div>
+                      <span class="syd-order-num">ORDER #${o.order_number}</span>
+                      <span style="font-size: 0.76rem; color: #7D736A; margin-left: 8px;">Placed on ${o.created_at}</span>
+                    </div>
+                    <span class="syd-order-status-badge ${o.status}">${o.status_label || o.status}</span>
+                  </div>
+
+                  <div class="syd-order-card-meta">
+                    <span>Payment: <strong>${o.payment_method}</strong></span>
+                    <span>Dispatch: <strong>${o.shipping_address}</strong></span>
+                  </div>
+
+                  <div class="syd-order-items-preview">
+                    ${(o.items || []).map(it => `
+                      <div class="syd-order-preview-row">
+                        <div class="syd-order-preview-left">
+                          <img src="${it.image || 'assets/spices.png'}" alt="${it.name}" class="syd-order-preview-thumb">
+                          <div>
+                            <strong>${it.name}</strong>
+                            <div style="font-size: 0.72rem; color: #7D736A;">Qty: ${it.quantity}</div>
+                          </div>
+                        </div>
+                        <strong>₹${(it.price * it.quantity).toFixed(2)}</strong>
+                      </div>
+                    `).join('')}
+                  </div>
+
+                  <div class="syd-order-card-footer">
+                    <div>
+                      <span style="font-size: 0.76rem; color: #7D736A; display: block;">Total Paid</span>
+                      <span class="syd-order-total-price">₹${Number(o.grand_total).toFixed(2)}</span>
+                    </div>
+                    <button type="button" class="btn-track-order-mini" onclick="closeAccountModal(); openOrderTracking('${o.order_number}');">
+                      Track Live Dispatch &rarr;
+                    </button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        }
+      } catch (err) {
+        tabContent.innerHTML = `
+          <div style="text-align:center; padding:30px; color:#C25934;">
+            Could not fetch order history from backend desk.
+          </div>
+        `;
+      }
+    }
+
+    // 2. PROFILE & SAVED ADDRESS TAB
+    else if (activeTab === 'profile') {
+      try {
+        const res = await fetch(`${API_BASE_URL}/customers/${customer.id}/profile`);
+        const pData = await res.json();
+        const profile = pData.data || customer;
+
+        tabContent.innerHTML = `
+          <form id="syd-profile-form">
+            <div class="syd-form-row">
+              <div class="syd-form-group">
+                <label class="syd-form-label">First Name <span class="req">*</span></label>
+                <input type="text" id="prof-fname" class="syd-form-input" value="${profile.first_name || ''}" required>
+              </div>
+              <div class="syd-form-group">
+                <label class="syd-form-label">Last Name</label>
+                <input type="text" id="prof-lname" class="syd-form-input" value="${profile.last_name || ''}">
+              </div>
+            </div>
+
+            <div class="syd-form-row">
+              <div class="syd-form-group">
+                <label class="syd-form-label">Email Address (Registered)</label>
+                <input type="email" class="syd-form-input" value="${profile.email || ''}" disabled style="opacity:0.7; cursor:not-allowed;">
+              </div>
+              <div class="syd-form-group">
+                <label class="syd-form-label">Phone / WhatsApp <span class="req">*</span></label>
+                <input type="tel" id="prof-phone" class="syd-form-input" value="${profile.phone || ''}" required>
+              </div>
+            </div>
+
+            <div class="syd-checkout-section-title" style="margin: 18px 0 10px; font-size: 0.85rem;">
+              <span>📍 Primary Delivery Address</span>
+            </div>
+
+            <div class="syd-form-group">
+              <label class="syd-form-label">Street Address</label>
+              <input type="text" id="prof-address" class="syd-form-input" placeholder="House/Flat No., Apartment, Street" value="${profile.address || ''}">
+            </div>
+
+            <div class="syd-form-row">
+              <div class="syd-form-group">
+                <label class="syd-form-label">City &amp; State</label>
+                <input type="text" id="prof-city" class="syd-form-input" value="${profile.city || 'Ahmedabad, Gujarat'}">
+              </div>
+              <div class="syd-form-group">
+                <label class="syd-form-label">Postal Pincode</label>
+                <input type="text" id="prof-pincode" class="syd-form-input" maxlength="6" value="${profile.pincode || '384170'}">
+              </div>
+            </div>
+
+            <div class="syd-checkout-section-title" style="margin: 18px 0 10px; font-size: 0.85rem;">
+              <span>🔒 Change Password (Optional)</span>
+            </div>
+
+            <div class="syd-form-group">
+              <label class="syd-form-label">New Password</label>
+              <input type="password" id="prof-password" class="syd-form-input" placeholder="Leave empty to keep current password">
+            </div>
+
+            <button type="submit" class="btn-confirm-order" id="btn-save-profile" style="margin-top: 16px;">
+              <span>Save Profile &amp; Address</span> &rarr;
+            </button>
+          </form>
+        `;
+
+        document.getElementById('syd-profile-form')?.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const saveBtn = document.getElementById('btn-save-profile');
+          const fname = document.getElementById('prof-fname').value.trim();
+          const lname = document.getElementById('prof-lname').value.trim();
+          const phone = document.getElementById('prof-phone').value.trim();
+          const address = document.getElementById('prof-address').value.trim();
+          const city = document.getElementById('prof-city').value.trim();
+          const pincode = document.getElementById('prof-pincode').value.trim();
+          const password = document.getElementById('prof-password').value;
+
+          if (saveBtn) {
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = `<span>Saving Changes...</span>`;
+          }
+
+          try {
+            const uRes = await fetch(`${API_BASE_URL}/customers/${customer.id}/profile`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+              body: JSON.stringify({
+                first_name: fname,
+                last_name: lname,
+                phone: phone,
+                address: address,
+                city: city,
+                pincode: pincode,
+                password: password || undefined
+              })
+            });
+            const uJson = await uRes.json();
+            if (uRes.ok && uJson.success) {
+              setLoggedInCustomer(uJson.data);
+              showToast('Profile and delivery address updated successfully!');
+              renderCustomerPortal('profile');
+            } else {
+              throw new Error(uJson.message || 'Could not update profile.');
+            }
+          } catch (err) {
+            showToast(err.message || 'Failed to update profile.');
+            if (saveBtn) {
+              saveBtn.disabled = false;
+              saveBtn.innerHTML = `<span>Save Profile &amp; Address</span> &rarr;`;
+            }
+          }
+        });
+      } catch (err) {
+        tabContent.innerHTML = `<div style="text-align:center; padding:30px; color:#C25934;">Could not load profile.</div>`;
+      }
+    }
+
+    // 3. WISHLIST TAB
+    else if (activeTab === 'wishlist') {
+      tabContent.innerHTML = `
+        <div class="syd-account-orders-list">
+          <div class="syd-order-card" style="display: flex; align-items: center; justify-content: space-between; gap: 14px;">
+            <div style="display:flex; align-items:center; gap: 12px;">
+              <img src="assets/magicbland.png" alt="Magic Blend" style="width:48px; height:48px; border-radius:8px; object-fit:cover; border:1px solid #EAE5DE;">
+              <div>
+                <strong style="color: #2B231D; font-size: 0.92rem;">Magic Blend (Secret Spice)</strong>
+                <div style="font-size: 0.78rem; color: #7D736A;">250g Pouch &bull; ₹195.00</div>
+              </div>
+            </div>
+            <button type="button" class="btn-check-pin" onclick="cart.push({id:'magic-blend-250g', name:'Magic Blend', weight:'250g', price:195, image:'assets/magicbland.png', qty:1}); saveCart(); showToast('Added Magic Blend to your bag!'); closeAccountModal();">
+              Add to Bag +
+            </button>
+          </div>
+
+          <div class="syd-order-card" style="display: flex; align-items: center; justify-content: space-between; gap: 14px;">
+            <div style="display:flex; align-items:center; gap: 12px;">
+              <img src="assets/garammasala.png" alt="Royal Garam Masala" style="width:48px; height:48px; border-radius:8px; object-fit:cover; border:1px solid #EAE5DE;">
+              <div>
+                <strong style="color: #2B231D; font-size: 0.92rem;">Royal Garam Masala</strong>
+                <div style="font-size: 0.78rem; color: #7D736A;">100g Pouch &bull; ₹210.00</div>
+              </div>
+            </div>
+            <button type="button" class="btn-check-pin" onclick="cart.push({id:'garam-masala-100g', name:'Royal Garam Masala', weight:'100g', price:210, image:'assets/garammasala.png', qty:1}); saveCart(); showToast('Added Royal Garam Masala to your bag!'); closeAccountModal();">
+              Add to Bag +
+            </button>
+          </div>
+
+          <div class="syd-order-card" style="display: flex; align-items: center; justify-content: space-between; gap: 14px;">
+            <div style="display:flex; align-items:center; gap: 12px;">
+              <img src="assets/chilli.png" alt="Red Chilli Powder" style="width:48px; height:48px; border-radius:8px; object-fit:cover; border:1px solid #EAE5DE;">
+              <div>
+                <strong style="color: #2B231D; font-size: 0.92rem;">Red Chilli Powder (Stemless Guntur)</strong>
+                <div style="font-size: 0.78rem; color: #7D736A;">250g Pouch &bull; ₹185.00</div>
+              </div>
+            </div>
+            <button type="button" class="btn-check-pin" onclick="cart.push({id:'red-chilli-250g', name:'Red Chilli Powder', weight:'250g', price:185, image:'assets/chilli.png', qty:1}); saveCart(); showToast('Added Red Chilli Powder to your bag!'); closeAccountModal();">
+              Add to Bag +
+            </button>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  // Hook all Customer Account buttons across all pages and mobile drawers
+  function initAccountButtons() {
+    // Check if any .header-actions is missing the button, inject it automatically
+    document.querySelectorAll('.header-actions').forEach(actions => {
+      if (!actions.querySelector('.btn-account')) {
+        const bagBtn = actions.querySelector('.btn-bag');
+        const accBtn = document.createElement('button');
+        accBtn.type = 'button';
+        accBtn.className = 'btn-account';
+        accBtn.id = 'account-toggle';
+        accBtn.setAttribute('aria-label', 'Customer Account');
+        accBtn.innerHTML = `
+          <svg class="account-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span class="account-btn-label">Sign In</span>
+        `;
+        if (bagBtn) {
+          actions.insertBefore(accBtn, bagBtn);
+        } else {
+          actions.appendChild(accBtn);
+        }
+      }
+    });
+
+    document.querySelectorAll('.btn-account').forEach(btn => {
+      btn.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        openAccountModal();
+      };
+    });
+
+    document.querySelectorAll('.mobile-account-link').forEach(link => {
+      link.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const mobileMenu = document.getElementById('mobile-nav-menu');
+        if (mobileMenu) mobileMenu.classList.remove('active');
+        openAccountModal();
+      };
+    });
+
+    updateAccountButtonsUI();
+  }
+
+  // Call immediately on load
+  initAccountButtons();
+
   // --------------------------------------------------------------------------
   // 3B. ONE-PAGE CHECKOUT MODAL & BACKEND ORDER DESK INTEGRATION
   // --------------------------------------------------------------------------
@@ -364,11 +1079,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const shipping = 0.00; // Free direct shipping
     const grandTotal = subtotal + shipping;
 
-    const savedName = localStorage.getItem('syd_customer_name') || '';
-    const savedEmail = localStorage.getItem('syd_customer_email') || '';
-    const savedPhone = localStorage.getItem('syd_customer_phone') || '';
-    const savedAddress = localStorage.getItem('syd_customer_address') || '';
-    const savedPincode = localStorage.getItem('syd_customer_pincode') || '384170';
+    const loggedCustomer = getLoggedInCustomer();
+    const savedName = loggedCustomer?.name || localStorage.getItem('syd_customer_name') || '';
+    const savedEmail = loggedCustomer?.email || localStorage.getItem('syd_customer_email') || '';
+    const savedPhone = loggedCustomer?.phone || localStorage.getItem('syd_customer_phone') || '';
+    const savedAddress = loggedCustomer?.address || localStorage.getItem('syd_customer_address') || '';
+    const savedPincode = loggedCustomer?.pincode || localStorage.getItem('syd_customer_pincode') || '384170';
 
     modalBody.innerHTML = `
       <form id="syd-checkout-form" class="syd-checkout-grid">
@@ -646,7 +1362,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
+          const loggedCust = getLoggedInCustomer();
           const payload = {
+            customer_id: loggedCust ? loggedCust.id : undefined,
             customer_name: nameVal,
             customer_email: emailVal,
             customer_phone: phoneVal,
@@ -855,13 +1573,15 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.style.overflow = 'hidden';
 
     const grandTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    const loggedCust = getLoggedInCustomer();
     const payload = {
-      customer_name: 'Test Customer (Vivek)',
-      customer_email: 'test.buyer@sydspices.com',
-      customer_phone: '+91 98765 43210',
-      customer_address: 'Gala No. 12, Spice Park Mandi Road',
-      customer_city: 'Ahmedabad, Gujarat',
-      customer_pincode: '384170',
+      customer_id: loggedCust ? loggedCust.id : undefined,
+      customer_name: loggedCust?.name || 'Test Customer (Vivek)',
+      customer_email: loggedCust?.email || 'test.buyer@sydspices.com',
+      customer_phone: loggedCust?.phone || '+91 98765 43210',
+      customer_address: loggedCust?.address || 'Gala No. 12, Spice Park Mandi Road',
+      customer_city: loggedCust?.city || 'Ahmedabad, Gujarat',
+      customer_pincode: loggedCust?.pincode || '384170',
       payment_method: 'test_order',
       grand_total: grandTotal,
       items: cart.map(i => ({
