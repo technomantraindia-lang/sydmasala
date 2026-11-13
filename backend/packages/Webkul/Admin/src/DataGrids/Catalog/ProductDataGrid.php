@@ -132,6 +132,9 @@ class ProductDataGrid extends DataGrid
                 if (str_starts_with($img, 'http://') || str_starts_with($img, 'https://')) {
                     return $img;
                 }
+                if (str_starts_with($img, 'assets/products/syd_')) {
+                    return url('storage/products/' . basename($img));
+                }
                 if (str_starts_with($img, '/')) {
                     return url($img);
                 }

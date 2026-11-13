@@ -265,7 +265,7 @@
                                     @click="setPrimaryImage(idx)"
                                     :title="idx === 0 ? 'Primary Cover Photo' : 'Click to set as Main Cover Photo'"
                                 >
-                                    <img :src="imgSrc.startsWith('http') || imgSrc.startsWith('/') ? imgSrc : '/' + imgSrc" class="h-20 w-full rounded object-contain bg-gray-50 dark:bg-gray-800" alt="Product photo">
+                                    <img :src="imgSrc.startsWith('http') ? imgSrc : (imgSrc.startsWith('assets/products/syd_') ? '/storage/products/' + imgSrc.replace('assets/products/', '') : (imgSrc.startsWith('/') ? imgSrc : '/' + imgSrc))" class="h-20 w-full rounded object-contain bg-gray-50 dark:bg-gray-800" alt="Product photo">
                                     
                                     <!-- Primary Cover Badge -->
                                     <span

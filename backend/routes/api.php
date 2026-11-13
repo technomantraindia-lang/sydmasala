@@ -62,19 +62,29 @@ if (!function_exists('getSydSpicesProducts')) {
 
                         $weightStr = $p->weight ? (is_numeric($p->weight) && $p->weight < 10 ? ($p->weight * 1000) . 'g' : $p->weight . (is_numeric($p->weight) ? 'g' : '')) : '250g';
 
-                        $img = $p->base_image ?: 'assets/step_01_sourced.png';
-                        if (!str_starts_with($img, 'assets/') && !str_starts_with($img, 'http') && !str_starts_with($img, '/')) {
-                            $img = 'storage/' . $img;
-                        }
+                        $resolveImgUrl = function ($src) {
+                            if (empty($src)) return 'assets/magicbland.png';
+                            if (str_starts_with($src, 'http://') || str_starts_with($src, 'https://')) {
+                                return $src;
+                            }
+                            if (str_starts_with($src, 'assets/products/syd_')) {
+                                return url('storage/products/' . basename($src));
+                            }
+                            if (str_starts_with($src, 'storage/')) {
+                                return url($src);
+                            }
+                            if (str_starts_with($src, 'product/')) {
+                                return url('storage/' . $src);
+                            }
+                            return $src;
+                        };
+
+                        $img = $resolveImgUrl($p->base_image ?: 'assets/step_01_sourced.png');
 
                         $pImages = [];
                         if (isset($allProductImages[$p->product_id])) {
                             foreach ($allProductImages[$p->product_id] as $imgRow) {
-                                $cleanPath = $imgRow->path;
-                                if (!str_starts_with($cleanPath, 'assets/') && !str_starts_with($cleanPath, 'http') && !str_starts_with($cleanPath, '/')) {
-                                    $cleanPath = 'storage/' . $cleanPath;
-                                }
-                                $pImages[] = $cleanPath;
+                                $pImages[] = $resolveImgUrl($imgRow->path);
                             }
                         }
                         if (empty($pImages)) {
@@ -433,12 +443,14 @@ $registerSydApiEndpoints = function () {
 
             $relPath = 'assets/products/' . $filename;
             $storagePath = 'storage/products/' . $filename;
+            $fullUrl = url($storagePath);
 
             $uploaded[] = [
-                'path'         => $relPath,
+                'path'         => $fullUrl,
+                'rel_path'     => $relPath,
                 'storage_path' => $storagePath,
-                'url'          => 'http://127.0.0.1:8000/' . $storagePath,
-                'frontend_url' => 'http://127.0.0.1:3000/' . $relPath,
+                'url'          => $fullUrl,
+                'frontend_url' => $fullUrl,
                 'filename'     => $filename,
             ];
         }

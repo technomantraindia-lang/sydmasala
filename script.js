@@ -190,6 +190,23 @@ document.addEventListener('DOMContentLoaded', () => {
       : CLOUD_API_URL
   );
 
+  function resolveProductImage(img) {
+    if (!img) return 'assets/magicbland.png';
+    if (img.startsWith('http://') || img.startsWith('https://')) return img;
+    const base = API_BASE_URL.replace(/\/api\/?$/, '');
+    if (img.startsWith('storage/')) {
+      return `${base}/${img}`;
+    }
+    if (img.startsWith('assets/products/syd_')) {
+      const filename = img.replace(/^assets\/products\//, '');
+      return `${base}/storage/products/${filename}`;
+    }
+    if (img.startsWith('product/')) {
+      return `${base}/storage/${img}`;
+    }
+    return img;
+  }
+
   let cart = JSON.parse(localStorage.getItem('syd_cart_items')) || [
     { id: 'magic-blend-250g', name: 'Magic Blend', weight: '250g', price: 195, image: 'assets/magicbland.png', qty: 1 },
     { id: 'red-chilli-250g', name: 'Premium Red Chilli Powder', weight: '250g', price: 185, image: 'assets/chilli.png', qty: 1 },
@@ -1910,7 +1927,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const origPrice = prod.original_price ? `<span class="spice-price-original">₹${Math.round(prod.original_price)}</span>` : '';
             const notes = (prod.notes || '100% Pure Indian Spice').replace(/"/g, '&quot;');
             const desc = (prod.description || prod.subtitle || '').replace(/"/g, '&quot;');
-            const cleanImg = prod.image || 'assets/magicbland.png';
+            const cleanImg = resolveProductImage(prod.image);
             const priceVal = Math.round(prod.price);
             const pId = prod.id || `${prod.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${prod.weight}`;
             const pSlug = prod.slug || pId;
@@ -2359,7 +2376,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (breadName) breadName.textContent = prod.name;
       if (badgeEl) badgeEl.textContent = prod.badge || '100% Pure';
       if (imgEl) {
-        imgEl.src = prod.image;
+        imgEl.src = resolveProductImage(prod.image);
         imgEl.alt = prod.name;
       }
       if (catEl) catEl.textContent = prod.category;
@@ -2372,7 +2389,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // PDP Multiple Images Gallery Thumbnails
       const thumbsContainer = document.getElementById('pdp-thumbnails');
-      const allImages = (prod.images && prod.images.length > 0) ? prod.images : [prod.image];
+      const allImages = (prod.images && prod.images.length > 0) ? prod.images.map(resolveProductImage) : [resolveProductImage(prod.image)];
       if (thumbsContainer) {
         if (allImages.length > 1) {
           thumbsContainer.style.display = 'flex';
@@ -2451,8 +2468,8 @@ document.addEventListener('DOMContentLoaded', () => {
             category: json.data.category,
             script: json.data.subtitle || json.data.tagline || 'Single-Origin Pure Indian Spice',
             badge: json.data.badge || '100% Pure',
-            image: json.data.image || 'assets/step_01_sourced.png',
-            images: (json.data.images && json.data.images.length > 0) ? json.data.images : [json.data.image || 'assets/step_01_sourced.png'],
+            image: resolveProductImage(json.data.image || 'assets/step_01_sourced.png'),
+            images: ((json.data.images && json.data.images.length > 0) ? json.data.images : [json.data.image || 'assets/step_01_sourced.png']).map(resolveProductImage),
             desc: json.data.description || json.data.subtitle,
             notes: json.data.notes || json.data.short_description,
             weights: (json.data.weights && json.data.weights.length > 0) ? json.data.weights : [
