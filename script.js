@@ -182,7 +182,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // --------------------------------------------------------------------------
   // 3. Dynamic Shopping Bag State & LocalStorage Engine
   // --------------------------------------------------------------------------
-  const API_BASE_URL = 'http://127.0.0.1:8000/api';
+  const CLOUD_API_URL = 'https://syd-spices-backend.onrender.com/api';
+  const LOCAL_API_URL = 'http://127.0.0.1:8000/api';
+  const API_BASE_URL = localStorage.getItem('syd_api_url') || (
+    (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
+      ? LOCAL_API_URL
+      : CLOUD_API_URL
+  );
 
   let cart = JSON.parse(localStorage.getItem('syd_cart_items')) || [
     { id: 'magic-blend-250g', name: 'Magic Blend', weight: '250g', price: 195, image: 'assets/magicbland.png', qty: 1 },
