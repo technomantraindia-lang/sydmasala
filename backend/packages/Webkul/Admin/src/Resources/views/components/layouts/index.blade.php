@@ -120,10 +120,10 @@
                     </div>
                 </div>
 
-                <!-- VIZE Footer -->
+                <!-- SYD Spices Footer -->
                 <div class="mt-auto">
                     <div class="border-t bg-white py-2.5 text-center text-xs text-gray-500 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400">
-                        &copy; {{ date('Y') }} <span class="font-semibold text-[#0D2C33] dark:text-[#8C4830]">VIZE Specialty Polymers</span> &bull; All Rights Reserved.
+                        &copy; {{ date('Y') }} <span class="font-semibold text-amber-700 dark:text-amber-500">SYD Spices Pvt. Ltd.</span> &bull; All Rights Reserved.
                     </div>
                 </div>
             </div>
