@@ -67,7 +67,10 @@ class CustomerController extends Controller
             return datagrid(CustomerDataGrid::class)->process();
         }
 
-        return redirect()->route('admin.vize.customers.index');
+        $groups = $this->customerGroupRepository->all();
+        $channels = core()->getAllChannels();
+
+        return view('admin::customers.customers.index', compact('groups', 'channels'));
     }
 
     /**
