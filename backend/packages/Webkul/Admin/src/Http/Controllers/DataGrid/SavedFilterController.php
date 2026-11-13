@@ -46,10 +46,15 @@ class SavedFilterController extends Controller
      */
     public function get()
     {
-        $savedFilters = $this->savedFilterRepository->findWhere([
-            'src' => request()->get('src'),
-            'user_id' => auth()->guard('admin')->user()->id,
-        ]);
+        $userId = auth()->guard('admin')->id();
+        if (! $userId) {
+            return response()->json(['data' => []]);
+        }
+
+        $savedFilters = \Illuminate\Support\Facades\DB::table('datagrid_saved_filters')
+            ->where('src', request()->get('src'))
+            ->where('user_id', $userId)
+            ->get();
 
         return response()->json(['data' => $savedFilters]);
     }
