@@ -68,7 +68,7 @@ if (!function_exists('getSydSpicesProducts')) {
                                 return $src;
                             }
                             if (str_starts_with($src, 'assets/products/syd_')) {
-                                return url('storage/products/' . basename($src));
+                                return $src;
                             }
                             if (str_starts_with($src, 'storage/')) {
                                 return url($src);

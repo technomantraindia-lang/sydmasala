@@ -192,16 +192,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function resolveProductImage(img) {
     if (!img) return 'assets/magicbland.png';
-    if (img.startsWith('http://') || img.startsWith('https://')) return img;
-    const base = API_BASE_URL.replace(/\/api\/?$/, '');
+    if (img.startsWith('http://') || img.startsWith('https://')) {
+      if (img.includes('/storage/products/')) {
+        const fname = img.split('/storage/products/')[1];
+        if (fname) {
+          return `assets/products/${fname}`;
+        }
+      }
+      return img;
+    }
+    if (img.startsWith('assets/')) {
+      return img;
+    }
     if (img.startsWith('storage/')) {
+      const base = API_BASE_URL.replace(/\/api\/?$/, '');
       return `${base}/${img}`;
     }
-    if (img.startsWith('assets/products/syd_')) {
-      const filename = img.replace(/^assets\/products\//, '');
-      return `${base}/storage/products/${filename}`;
-    }
     if (img.startsWith('product/')) {
+      const base = API_BASE_URL.replace(/\/api\/?$/, '');
       return `${base}/storage/${img}`;
     }
     return img;
@@ -1946,7 +1954,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     🔍
                   </button>
                   <a href="product-details.html?id=${pSlug}" class="spice-img-link" aria-label="View ${prod.name} details">
-                    <img src="${cleanImg}" alt="${prod.name}" class="spice-card-img" loading="lazy" onerror="this.onerror=null; this.src='assets/magicbland.png';">
+                    <img src="${cleanImg}" alt="${prod.name}" class="spice-card-img" loading="lazy" onerror="if (this.src.indexOf('onrender.com') !== -1 || this.src.indexOf('storage') !== -1) { this.src='assets/products/' + this.src.split('/').pop(); } else { this.onerror=null; this.src='assets/magicbland.png'; }">
                   </a>
                 </div>
 

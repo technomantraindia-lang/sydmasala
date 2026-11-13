@@ -35,7 +35,9 @@ generatedProductName.json
 /public/css
 /public/js
 /public/hot
-/public/storage
+/public/storage/*
+!/public/storage/products/
+!/public/storage/products/*
 /public/vendor
 /lang/vendor
 skills-lock.json
