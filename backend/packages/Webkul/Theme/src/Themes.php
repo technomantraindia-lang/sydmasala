@@ -275,9 +275,18 @@ class Themes
 
         $viteUrl = trim($viters[$namespace]['package_assets_directory'], '/').'/'.$url;
 
-        return Vite::useHotFile($viters[$namespace]['hot_file'])
-            ->useBuildDirectory($viters[$namespace]['build_directory'])
-            ->asset($viteUrl);
+        try {
+            return Vite::useHotFile($viters[$namespace]['hot_file'])
+                ->useBuildDirectory($viters[$namespace]['build_directory'])
+                ->asset($viteUrl);
+        } catch (\Throwable $e) {
+            $directPath = public_path($url);
+            if (file_exists($directPath)) {
+                return asset($url);
+            }
+
+            return asset('themes/' . ($namespace ?? 'shop') . '/' . $url);
+        }
     }
 
     /**

@@ -95,10 +95,13 @@ class Theme
             return Vite::useHotFile($this->vite['hot_file'])
                 ->useBuildDirectory($this->vite['build_directory'])
                 ->asset($viteUrl);
-        } catch (\Exception $e) {
-            report($e);
+        } catch (\Throwable $e) {
+            $directPath = public_path($url);
+            if (file_exists($directPath)) {
+                return asset($url);
+            }
 
-            abort(404);
+            return asset('themes/' . $this->code . '/' . $url);
         }
     }
 
