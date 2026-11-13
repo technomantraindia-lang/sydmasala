@@ -503,6 +503,8 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
 
         <form id="syd-login-form">
+          <div id="login-auth-notice" class="syd-auth-notice" style="display: none;"></div>
+
           <div class="syd-form-group">
             <label class="syd-form-label">Email or Phone Number <span class="req">*</span></label>
             <input type="text" id="login-identifier" class="syd-form-input" placeholder="e.g. aarav@sydspices.com or 9876543210" required>
@@ -526,6 +528,8 @@ document.addEventListener('DOMContentLoaded', () => {
         </form>
       ` : `
         <form id="syd-register-form">
+          <div id="reg-auth-notice" class="syd-auth-notice" style="display: none;"></div>
+
           <div class="syd-form-group">
             <label class="syd-form-label">Full Name <span class="req">*</span></label>
             <input type="text" id="reg-name" class="syd-form-input" placeholder="e.g. Aarav Patel" required>
@@ -596,6 +600,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('syd-login-form')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const submitBtn = document.getElementById('btn-login-submit');
+      const noticeBox = document.getElementById('login-auth-notice');
+      if (noticeBox) { noticeBox.style.display = 'none'; noticeBox.innerHTML = ''; }
+
       const identifier = document.getElementById('login-identifier').value.trim();
       const password = document.getElementById('login-password').value;
 
@@ -613,13 +620,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const result = await res.json();
         if (res.ok && result.success) {
           setLoggedInCustomer(result.data);
-          showToast(result.message || 'Signed in successfully!');
+          showToast(result.message || 'Signed in successfully!', 'success');
           renderCustomerPortal('orders');
         } else {
           throw new Error(result.message || 'Login failed. Please check your credentials.');
         }
       } catch (err) {
-        showToast(err.message || 'Could not connect to authentication desk.');
+        if (noticeBox) {
+          noticeBox.className = 'syd-auth-notice error';
+          noticeBox.style.display = 'flex';
+          noticeBox.innerHTML = `<span style="font-size:1.1rem; flex-shrink:0;">⚠️</span><span>${err.message || 'Could not connect to authentication desk.'}</span>`;
+        }
+        showToast(err.message || 'Could not connect to authentication desk.', 'error');
         if (submitBtn) {
           submitBtn.disabled = false;
           submitBtn.innerHTML = `<span>Sign In to Kitchen</span> &rarr;`;
@@ -631,6 +643,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('syd-register-form')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const submitBtn = document.getElementById('btn-reg-submit');
+      const noticeBox = document.getElementById('reg-auth-notice');
+      if (noticeBox) { noticeBox.style.display = 'none'; noticeBox.innerHTML = ''; }
+
       const name = document.getElementById('reg-name').value.trim();
       const email = document.getElementById('reg-email').value.trim();
       const phone = document.getElementById('reg-phone').value.trim();
@@ -653,13 +668,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const result = await res.json();
         if (res.ok && result.success) {
           setLoggedInCustomer(result.data);
-          showToast('Account created successfully! Welcome to SYD Spices.');
+          showToast('Account created successfully! Welcome to SYD Spices.', 'success');
           renderCustomerPortal('orders');
         } else {
           throw new Error(result.message || 'Registration could not be completed.');
         }
       } catch (err) {
-        showToast(err.message || 'Registration failed.');
+        if (noticeBox) {
+          noticeBox.className = 'syd-auth-notice error';
+          noticeBox.style.display = 'flex';
+          noticeBox.innerHTML = `<span style="font-size:1.1rem; flex-shrink:0;">⚠️</span><span>${err.message || 'Registration failed.'}</span>`;
+        }
+        showToast(err.message || 'Registration failed.', 'error');
         if (submitBtn) {
           submitBtn.disabled = false;
           submitBtn.innerHTML = `<span>Create Account &amp; Proceed</span> &rarr;`;
@@ -3360,24 +3380,60 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --------------------------------------------------------------------------
-  // 6. Toast Notification Utility
+  // 6. Toast Notification Utility (Ultra High-Contrast, Top Z-Index 999999)
   // --------------------------------------------------------------------------
-  function showToast(message) {
+  function showToast(message, type = 'info') {
     let toast = document.getElementById('syd-toast');
     if (!toast) {
       toast = document.createElement('div');
       toast.id = 'syd-toast';
-      toast.className = 'syd-toast';
       document.body.appendChild(toast);
     }
+
+    const msgLower = (message || '').toLowerCase();
+    const isError = type === 'error' || 
+      msgLower.includes('fail') || 
+      msgLower.includes('error') || 
+      msgLower.includes('invalid') || 
+      msgLower.includes('incorrect') || 
+      msgLower.includes('already registered') || 
+      msgLower.includes('already exists') ||
+      msgLower.includes('could not connect');
+
+    const isSuccess = type === 'success' || 
+      msgLower.includes('success') || 
+      msgLower.includes('welcome') || 
+      msgLower.includes('created') || 
+      msgLower.includes('added') || 
+      msgLower.includes('registered') || 
+      msgLower.includes('signed in') || 
+      msgLower.includes('saved') || 
+      msgLower.includes('verified');
+
+    toast.className = 'syd-toast' + (isError ? ' toast-error' : (isSuccess ? ' toast-success' : ''));
+
+    let iconText = '🌿';
+    if (isError) {
+      iconText = '⚠️';
+    } else if (isSuccess) {
+      iconText = '✓';
+    }
+
     toast.innerHTML = `
-      <span style="font-size: 1.1rem;">🌿</span>
-      <span>${message}</span>
+      <span class="syd-toast-icon">${iconText}</span>
+      <span class="syd-toast-text">${message}</span>
+      <button type="button" class="syd-toast-close" title="Dismiss" onclick="document.getElementById('syd-toast')?.classList.remove('show')">&times;</button>
     `;
+
+    // Force DOM reflow to restart transition
+    void toast.offsetWidth;
     toast.classList.add('show');
-    setTimeout(() => {
+
+    clearTimeout(window.__sydToastTimeout);
+    window.__sydToastTimeout = setTimeout(() => {
       toast.classList.remove('show');
-    }, 3500);
+    }, 4500);
   }
+  window.showToast = showToast;
 });
 

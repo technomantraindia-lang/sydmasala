@@ -1164,17 +1164,28 @@ $registerSydApiEndpoints = function () {
 
             $groupId = DB::table('customer_groups')->where('code', 'general')->value('id') ?? 1;
 
-            $existing = DB::table('customers')->where('email', $email)->first();
+            $existingByEmail = DB::table('customers')->where('email', $email)->first();
 
-            if ($existing) {
-                DB::table('customers')->where('id', $existing->id)->update([
+            // Verify unique phone if provided
+            if (!empty($phone)) {
+                $existingByPhone = DB::table('customers')->where('phone', $phone)->first();
+                if ($existingByPhone && (!$existingByEmail || $existingByPhone->id !== $existingByEmail->id)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => "An account with phone number {$phone} is already registered. Please Sign In or use a different phone number.",
+                    ], 409);
+                }
+            }
+
+            if ($existingByEmail) {
+                DB::table('customers')->where('id', $existingByEmail->id)->update([
                     'first_name'        => $firstName,
                     'last_name'         => $lastName,
-                    'phone'             => $phone ?? $existing->phone,
+                    'phone'             => $phone ?? $existingByEmail->phone,
                     'password'          => Hash::make($rawPassword),
                     'updated_at'        => now(),
                 ]);
-                $customerId = $existing->id;
+                $customerId = $existingByEmail->id;
             } else {
                 $customerId = DB::table('customers')->insertGetId([
                     'first_name'        => $firstName,
@@ -1235,6 +1246,12 @@ $registerSydApiEndpoints = function () {
                     'pincode'    => $pincode,
                 ],
             ], 201);
+        } catch (\Illuminate\Database\QueryException $qe) {
+            $msg = 'Account could not be created.';
+            if (str_contains($qe->getMessage(), 'Duplicate entry') || (isset($qe->errorInfo[1]) && $qe->errorInfo[1] == 1062)) {
+                $msg = 'An account with this phone number or email is already registered. Please Sign In instead.';
+            }
+            return response()->json(['success' => false, 'message' => $msg], 409);
         } catch (\Exception $e) {
             report($e);
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
@@ -1709,6 +1726,12 @@ $registerSydApiEndpoints = function () {
                 'admin_url'      => "http://127.0.0.1:8000/admin/sales/orders",
                 'message'        => 'Order confirmed! Your fresh small-batch spices are being packed for dispatch.',
             ], 201);
+        } catch (\Illuminate\Database\QueryException $qe) {
+            $msg = 'Account could not be created.';
+            if (str_contains($qe->getMessage(), 'Duplicate entry') || (isset($qe->errorInfo[1]) && $qe->errorInfo[1] == 1062)) {
+                $msg = 'An account with this phone number or email is already registered. Please Sign In instead.';
+            }
+            return response()->json(['success' => false, 'message' => $msg], 409);
         } catch (\Exception $e) {
             report($e);
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
