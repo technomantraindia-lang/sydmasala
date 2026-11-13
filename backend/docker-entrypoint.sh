@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "=== VIZE Resin Backend Booting ==="
+echo "=== SYD Spices Backend Booting ==="
 
 # Wait a moment for MySQL to be reachable if needed
 if [ -n "$DB_HOST" ] && [ "$DB_CONNECTION" = "mysql" ]; then
