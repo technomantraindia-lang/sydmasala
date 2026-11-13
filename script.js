@@ -374,29 +374,43 @@ document.addEventListener('DOMContentLoaded', () => {
       <form id="syd-checkout-form" class="syd-checkout-grid">
         <!-- Left: Shipping & Payment Details -->
         <div class="syd-checkout-form-col">
+          <!-- Test Mode Banner & 1-Click Auto-Fill -->
+          <div style="background: #eef7ee; border: 1.5px solid #2D5A27; border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 1.25rem;">⚡</span>
+              <div>
+                <strong style="color: #2D5A27; font-size: 0.84rem; display: block;">Instant Test Mode (No Payment Needed)</strong>
+                <span style="font-size: 0.74rem; color: #4A3E36;">Add orders directly to Bagisto backend without real payment.</span>
+              </div>
+            </div>
+            <button type="button" id="btn-autofill-test" style="background: #2D5A27; color: #ffffff; border: none; border-radius: 6px; padding: 6px 12px; font-size: 0.76rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+              ⚡ Fill Test Data
+            </button>
+          </div>
+
           <div class="syd-checkout-section-title">
             <span>📍 1. Delivery & Contact Details</span>
           </div>
 
           <div class="syd-form-group">
             <label class="syd-form-label">Full Name <span class="req">*</span></label>
-            <input type="text" id="checkout-name" class="syd-form-input" placeholder="e.g. Aarav Patel" value="${savedName}" required>
+            <input type="text" id="checkout-name" class="syd-form-input" placeholder="e.g. Aarav Patel" value="${savedName || 'Test Customer (Vivek)'}" required>
           </div>
 
           <div class="syd-form-row">
             <div class="syd-form-group">
               <label class="syd-form-label">Email Address <span class="req">*</span></label>
-              <input type="email" id="checkout-email" class="syd-form-input" placeholder="aarav@example.com" value="${savedEmail}" required>
+              <input type="email" id="checkout-email" class="syd-form-input" placeholder="test.buyer@sydspices.com" value="${savedEmail || 'test.buyer@sydspices.com'}" required>
             </div>
             <div class="syd-form-group">
               <label class="syd-form-label">Phone / WhatsApp <span class="req">*</span></label>
-              <input type="tel" id="checkout-phone" class="syd-form-input" placeholder="+91 98765 43210" value="${savedPhone}" required>
+              <input type="tel" id="checkout-phone" class="syd-form-input" placeholder="+91 98765 43210" value="${savedPhone || '+91 98765 43210'}" required>
             </div>
           </div>
 
           <div class="syd-form-group">
             <label class="syd-form-label">Delivery Street Address <span class="req">*</span></label>
-            <input type="text" id="checkout-address" class="syd-form-input" placeholder="House/Flat No., Apartment, Street name" value="${savedAddress}" required>
+            <input type="text" id="checkout-address" class="syd-form-input" placeholder="House/Flat No., Apartment, Street name" value="${savedAddress || 'Gala No. 12, Spice Park Mandi Road'}" required>
           </div>
 
           <div class="syd-form-row">
@@ -408,24 +422,32 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="syd-form-group">
               <label class="syd-form-label">Postal Pincode <span class="req">*</span></label>
               <div class="syd-pincode-wrap">
-                <input type="text" id="checkout-pincode" class="syd-form-input" placeholder="6-digit PIN" maxlength="6" value="${savedPincode}" required>
+                <input type="text" id="checkout-pincode" class="syd-form-input" placeholder="6-digit PIN" maxlength="6" value="${savedPincode || '384170'}" required>
                 <button type="button" class="btn-check-pin" id="btn-verify-pincode">Verify</button>
               </div>
-              <div class="syd-pincode-status" id="pincode-status-text"></div>
+              <div class="syd-pincode-status serviceable" id="pincode-status-text" style="display:block;">✓ Serviceable: Fresh dispatch from Gujarat Hub</div>
             </div>
           </div>
 
           <!-- Payment Options -->
           <div class="syd-checkout-section-title" style="margin-top: 20px;">
-            <span>💳 2. Payment Method</span>
+            <span>💳 2. Payment Method (Test Mode Ready)</span>
           </div>
 
-          <div class="syd-payment-options">
-            <label class="syd-payment-card active" id="pay-card-cod">
-              <input type="radio" name="payment_method" value="cod" checked>
+          <div class="syd-payment-options" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px;">
+            <label class="syd-payment-card active" id="pay-card-test">
+              <input type="radio" name="payment_method" value="test_order" checked>
+              <div>
+                <span style="color:#2D5A27; font-weight:700;">⚡ Test Order (Free)</span>
+                <div style="font-size: 0.7rem; color: #7D736A; margin-top: 2px;">Direct simulated order</div>
+              </div>
+            </label>
+
+            <label class="syd-payment-card" id="pay-card-cod">
+              <input type="radio" name="payment_method" value="cod">
               <div>
                 <span>Cash on Delivery</span>
-                <div style="font-size: 0.7rem; color: #7D736A; margin-top: 2px;">Pay upon fresh delivery</div>
+                <div style="font-size: 0.7rem; color: #7D736A; margin-top: 2px;">Pay upon delivery</div>
               </div>
             </label>
 
@@ -433,7 +455,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <input type="radio" name="payment_method" value="upi">
               <div>
                 <span>UPI / NetBanking</span>
-                <div style="font-size: 0.7rem; color: #7D736A; margin-top: 2px;">GPay, PhonePe, Paytm</div>
+                <div style="font-size: 0.7rem; color: #7D736A; margin-top: 2px;">GPay, PhonePe (Mock)</div>
               </div>
             </label>
           </div>
@@ -480,29 +502,65 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
 
             <button type="submit" class="btn-confirm-order" id="btn-place-order-submit">
-              <span>Confirm & Place Order</span>
+              <span>⚡ Place Test Order (No Pay)</span>
               <span>&rarr;</span>
             </button>
 
             <div class="syd-trust-dock">
-              <span>🔒 Encrypted Checkout</span>
+              <span>🔒 Direct Bagisto API</span>
               <span>•</span>
-              <span>🌿 100% Raw Spices</span>
+              <span>🌿 Live Backend Sync</span>
             </div>
           </div>
         </div>
       </form>
     `;
 
-    // Payment selection toggle styling
-    const payCod = document.getElementById('pay-card-cod');
-    const payUpi = document.getElementById('pay-card-upi');
+    // Auto-fill test details button handler
+    const autoFillBtn = document.getElementById('btn-autofill-test');
+    if (autoFillBtn) {
+      autoFillBtn.addEventListener('click', () => {
+        document.getElementById('checkout-name').value = 'Test Customer (Vivek)';
+        document.getElementById('checkout-email').value = 'test.buyer@sydspices.com';
+        document.getElementById('checkout-phone').value = '+91 98765 43210';
+        document.getElementById('checkout-address').value = 'Gala No. 12, Spice Park Mandi Road';
+        document.getElementById('checkout-city').value = 'Ahmedabad, Gujarat';
+        document.getElementById('checkout-pincode').value = '384170';
+
+        const pinStatus = document.getElementById('pincode-status-text');
+        if (pinStatus) {
+          pinStatus.className = 'syd-pincode-status serviceable';
+          pinStatus.style.display = 'block';
+          pinStatus.textContent = '✓ Serviceable: Fresh dispatch from Gujarat Hub';
+        }
+
+        const testRadio = modalBody.querySelector('input[name="payment_method"][value="test_order"]');
+        if (testRadio) {
+          testRadio.checked = true;
+          testRadio.dispatchEvent(new Event('change'));
+        }
+
+        showToast('⚡ Test customer details filled!');
+      });
+    }
+
+    // Payment selection toggle styling across all payment cards
     const payRadios = modalBody.querySelectorAll('input[name="payment_method"]');
     payRadios.forEach(radio => {
       radio.addEventListener('change', () => {
-        if (payCod && payUpi) {
-          payCod.classList.toggle('active', radio.value === 'cod');
-          payUpi.classList.toggle('active', radio.value === 'upi');
+        modalBody.querySelectorAll('.syd-payment-card').forEach(card => card.classList.remove('active'));
+        const parentCard = radio.closest('.syd-payment-card');
+        if (parentCard) parentCard.classList.add('active');
+
+        const submitBtn = document.getElementById('btn-place-order-submit');
+        if (submitBtn) {
+          if (radio.value === 'test_order') {
+            submitBtn.innerHTML = `<span>⚡ Place Test Order (No Pay)</span><span>&rarr;</span>`;
+          } else if (radio.value === 'cod') {
+            submitBtn.innerHTML = `<span>Confirm Cash on Delivery</span><span>&rarr;</span>`;
+          } else {
+            submitBtn.innerHTML = `<span>Pay via UPI / NetBanking</span><span>&rarr;</span>`;
+          }
         }
       });
     });
@@ -516,6 +574,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const pin = pinInput.value.trim();
         if (pin.length !== 6 || isNaN(pin)) {
           pinStatus.className = 'syd-pincode-status not-serviceable';
+          pinStatus.style.display = 'block';
           pinStatus.textContent = '⚠️ Enter a valid 6-digit Indian PIN code';
           return;
         }
@@ -526,6 +585,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
           const res = await fetch(`${API_BASE_URL}/shipping/check-pincode?pincode=${pin}`);
           const data = await res.json();
+          pinStatus.style.display = 'block';
           if (data.serviceable) {
             pinStatus.className = 'syd-pincode-status serviceable';
             pinStatus.textContent = `✓ ${data.message || 'Serviceable for fresh dispatch from Gujarat Hub'}`;
@@ -534,7 +594,7 @@ document.addEventListener('DOMContentLoaded', () => {
             pinStatus.textContent = `⚠️ ${data.message || 'Location not currently serviceable'}`;
           }
         } catch (e) {
-          // Graceful fallback
+          pinStatus.style.display = 'block';
           pinStatus.className = 'syd-pincode-status serviceable';
           pinStatus.textContent = '✓ Serviceable: Standard dispatch via Express Courier (2-4 days)';
         } finally {
@@ -551,13 +611,21 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
 
         const submitBtn = document.getElementById('btn-place-order-submit');
-        const nameVal = document.getElementById('checkout-name').value.trim();
-        const emailVal = document.getElementById('checkout-email').value.trim();
-        const phoneVal = document.getElementById('checkout-phone').value.trim();
-        const addressVal = document.getElementById('checkout-address').value.trim();
-        const cityVal = document.getElementById('checkout-city').value.trim();
-        const pincodeVal = document.getElementById('checkout-pincode').value.trim();
-        const paymentMethod = modalBody.querySelector('input[name="payment_method"]:checked')?.value || 'cod';
+        let nameVal = document.getElementById('checkout-name').value.trim();
+        let emailVal = document.getElementById('checkout-email').value.trim();
+        let phoneVal = document.getElementById('checkout-phone').value.trim();
+        let addressVal = document.getElementById('checkout-address').value.trim();
+        let cityVal = document.getElementById('checkout-city').value.trim();
+        let pincodeVal = document.getElementById('checkout-pincode').value.trim();
+        const paymentMethod = modalBody.querySelector('input[name="payment_method"]:checked')?.value || 'test_order';
+
+        // Friendly defaults for fast testing
+        if (!nameVal) nameVal = 'Test Customer (Vivek)';
+        if (!emailVal) emailVal = 'test.buyer@sydspices.com';
+        if (!phoneVal) phoneVal = '+91 98765 43210';
+        if (!addressVal) addressVal = 'Gala No. 12, Spice Park Mandi Road';
+        if (!cityVal) cityVal = 'Ahmedabad, Gujarat';
+        if (!pincodeVal) pincodeVal = '384170';
 
         // Remember contact details for seamless next order
         localStorage.setItem('syd_customer_name', nameVal);
@@ -569,7 +637,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (submitBtn) {
           submitBtn.disabled = true;
           submitBtn.innerHTML = `
-            <span>Recording Order with SYD Desk...</span>
+            <span>Recording in Bagisto Database...</span>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation: spin 1s linear infinite;">
               <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
               <path d="M12 2a10 10 0 0 1 10 10"></path>
@@ -607,22 +675,31 @@ document.addEventListener('DOMContentLoaded', () => {
           const result = await response.json();
 
           if (response.ok && result.success) {
-            // Render Celebratory Order Confirmation Screen
+            // Render Celebratory Order Confirmation Screen with Direct Link to Bagisto Admin
             modalBody.innerHTML = `
               <div class="syd-success-screen">
                 <div class="syd-success-icon">✓</div>
                 <h2 class="syd-success-title">Order Confirmed!</h2>
                 <div class="syd-order-id-badge">ORDER #${result.order_number}</div>
                 <p class="syd-success-message">
-                  Thank you, <strong>${result.customer_name}</strong>! Your order for <strong>₹${Number(result.grand_total).toFixed(2)}</strong> has been registered in the <strong>SYD Spices backend</strong>.
+                  Thank you, <strong>${result.customer_name}</strong>! Your order for <strong>₹${Number(result.grand_total).toFixed(2)}</strong> has been registered in the <strong>Bagisto backend database</strong>.
                   <br><br>
-                  A confirmation SMS &amp; invoice will be dispatched to <strong>${phoneVal}</strong>. Your spices will be freshly milled and packed in Gala No. 12, Spice Park, Gujarat within 24 hours.
+                  Stock has been automatically updated in inventory. You can verify this order immediately in your official Bagisto Admin sales dashboard.
                 </p>
-                <div style="margin-bottom: 24px; font-size: 0.8rem; color: #7D736A;">
-                  Payment Mode: <strong>${result.payment_method}</strong> &bull; Estimated Delivery: <strong>${result.estimated_delivery}</strong>
+                <div style="margin-bottom: 22px; font-size: 0.82rem; color: #7D736A;">
+                  Payment Mode: <strong style="color: #2D5A27;">${result.payment_method}</strong> &bull; Estimated Delivery: <strong>${result.estimated_delivery}</strong>
                 </div>
-                <button type="button" class="btn-success-close" style="margin-bottom:10px; background:#fff; color:var(--color-terracotta); border:1.5px solid var(--color-terracotta);" onclick="openOrderTracking('${result.order_number}')">Track Live Dispatch Status</button>
-                <button type="button" class="btn-success-close" id="btn-continue-shopping">Continue Exploring Spices</button>
+                <div style="display: flex; flex-direction: column; gap: 10px; max-width: 360px; margin: 0 auto 20px;">
+                  <a href="http://127.0.0.1:8000/admin/sales/orders" target="_blank" rel="noopener noreferrer" class="btn-success-close" style="background: #2D5A27; color: #ffffff; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <span>View Order in Bagisto Admin</span> &rarr;
+                  </a>
+                  <button type="button" class="btn-success-close" style="background: #ffffff; color: var(--color-terracotta); border: 1.5px solid var(--color-terracotta);" onclick="openOrderTracking('${result.order_number}')">
+                    Track Live Dispatch Status
+                  </button>
+                  <button type="button" class="btn-success-close" id="btn-continue-shopping" style="background: #FAF7F2; color: #4A3E36; border: 1px solid rgba(80, 60, 45, 0.2);">
+                    Continue Exploring Spices
+                  </button>
+                </div>
               </div>
             `;
 
@@ -637,7 +714,7 @@ document.addEventListener('DOMContentLoaded', () => {
             cart = [];
             localStorage.removeItem('syd_cart_items');
             updateCartUI();
-            showToast(`Order #${result.order_number} confirmed!`);
+            showToast(`Order #${result.order_number} registered in Bagisto!`);
           } else {
             throw new Error(result.message || 'Order could not be saved');
           }
@@ -751,7 +828,106 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Hook all .btn-checkout buttons across all pages (overriding any inline alerts)
+  // Quick 1-Click Instant Test Order without opening full modal
+  async function submitQuickTestOrder() {
+    if (!cart || cart.length === 0) {
+      showToast('Please add at least 1 spice to your bag first!');
+      return;
+    }
+
+    closeBag();
+    const backdrop = ensureCheckoutModal();
+    const modalBody = document.getElementById('syd-checkout-body');
+    const closeBtn = document.getElementById('syd-checkout-close');
+    if (closeBtn) closeBtn.onclick = closeCheckoutModal;
+
+    modalBody.innerHTML = `
+      <div class="syd-success-screen" style="padding: 45px 20px;">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2D5A27" stroke-width="2.5" style="animation: spin 1s linear infinite; margin: 0 auto 16px; display: block;">
+          <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
+          <path d="M12 2a10 10 0 0 1 10 10"></path>
+        </svg>
+        <h3 style="font-family:'Playfair Display',serif; font-size:1.35rem; color:#2B231D; margin-bottom:8px;">Recording Test Order in Bagisto...</h3>
+        <p style="font-size:0.85rem; color:#7D736A;">Creating order record, updating stock, and generating official order ID.</p>
+      </div>
+    `;
+    backdrop.classList.add('active');
+    document.body.style.overflow = 'hidden';
+
+    const grandTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    const payload = {
+      customer_name: 'Test Customer (Vivek)',
+      customer_email: 'test.buyer@sydspices.com',
+      customer_phone: '+91 98765 43210',
+      customer_address: 'Gala No. 12, Spice Park Mandi Road',
+      customer_city: 'Ahmedabad, Gujarat',
+      customer_pincode: '384170',
+      payment_method: 'test_order',
+      grand_total: grandTotal,
+      items: cart.map(i => ({
+        id: i.id,
+        name: `${i.name} (${i.weight})`,
+        price: i.price,
+        quantity: i.qty
+      }))
+    };
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/checkout/place-order`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const result = await response.json();
+      if (response.ok && result.success) {
+        modalBody.innerHTML = `
+          <div class="syd-success-screen">
+            <div class="syd-success-icon">✓</div>
+            <h2 class="syd-success-title">Test Order Placed!</h2>
+            <div class="syd-order-id-badge">ORDER #${result.order_number}</div>
+            <p class="syd-success-message">
+              Order successfully placed for <strong>${result.customer_name}</strong> (<strong>₹${Number(result.grand_total).toFixed(2)}</strong>) with <strong>No Payment Needed</strong>!
+              <br><br>
+              Stock has been decremented. You can view this order immediately in your official Bagisto Admin sales orders dashboard.
+            </p>
+            <div style="margin-bottom: 22px; font-size: 0.82rem; color: #7D736A;">
+              Payment Mode: <strong style="color: #2D5A27;">${result.payment_method}</strong> &bull; Status: <strong>Processing</strong>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 10px; max-width: 360px; margin: 0 auto 20px;">
+              <a href="http://127.0.0.1:8000/admin/sales/orders" target="_blank" rel="noopener noreferrer" class="btn-success-close" style="background: #2D5A27; color: #ffffff; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <span>View Order in Bagisto Admin</span> &rarr;
+              </a>
+              <button type="button" class="btn-success-close" style="background: #ffffff; color: var(--color-terracotta); border: 1.5px solid var(--color-terracotta);" onclick="openOrderTracking('${result.order_number}')">
+                Track Live Dispatch Status
+              </button>
+              <button type="button" class="btn-success-close" id="btn-continue-shopping" style="background: #FAF7F2; color: #4A3E36; border: 1px solid rgba(80, 60, 45, 0.2);">
+                Continue Exploring Spices
+              </button>
+            </div>
+          </div>
+        `;
+        const continueBtn = document.getElementById('btn-continue-shopping');
+        if (continueBtn) continueBtn.onclick = closeCheckoutModal;
+        cart = [];
+        localStorage.removeItem('syd_cart_items');
+        updateCartUI();
+        showToast(`Test Order #${result.order_number} created in Bagisto!`);
+      } else {
+        throw new Error(result.message || 'Failed to place test order');
+      }
+    } catch (e) {
+      modalBody.innerHTML = `
+        <div class="syd-success-screen">
+          <div style="font-size:2.5rem; margin-bottom:12px;">⚠️</div>
+          <h3 style="color:#C25934; margin-bottom:10px;">Test Order Failed</h3>
+          <p style="color:#7D736A; font-size:0.85rem; margin-bottom:20px;">${e.message || 'Unable to connect to Laravel order desk.'}</p>
+          <button type="button" class="btn-success-close" onclick="closeCheckoutModal()">Close</button>
+        </div>
+      `;
+    }
+  }
+
+  // Hook all .btn-checkout buttons across all pages and inject 1-Click Test Order button into drawer
   function initCheckoutButtons() {
     document.querySelectorAll('.btn-checkout').forEach(btn => {
       btn.onclick = null;
@@ -761,6 +937,24 @@ document.addEventListener('DOMContentLoaded', () => {
         e.stopPropagation();
         openCheckoutModal();
       });
+    });
+
+    document.querySelectorAll('.drawer-footer').forEach(footer => {
+      if (!footer.querySelector('.btn-quick-test-order')) {
+        const testBtn = document.createElement('button');
+        testBtn.type = 'button';
+        testBtn.className = 'btn-quick-test-order';
+        testBtn.innerHTML = '<span>⚡ 1-Click Test Order (No Payment)</span>';
+        testBtn.style.cssText = 'width: 100%; margin-top: 8px; padding: 10px 14px; background: #EEF7EE; color: #2D5A27; border: 1.5px dashed #2D5A27; border-radius: 8px; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s;';
+        testBtn.onmouseenter = () => { testBtn.style.background = '#e1f2e1'; };
+        testBtn.onmouseleave = () => { testBtn.style.background = '#EEF7EE'; };
+        testBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          submitQuickTestOrder();
+        });
+        footer.appendChild(testBtn);
+      }
     });
   }
 
