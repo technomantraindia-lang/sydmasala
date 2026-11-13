@@ -1539,7 +1539,7 @@ document.addEventListener('DOMContentLoaded', () => {
     area.innerHTML = '<div style="text-align:center; padding:30px; color:#8E8278;">Looking up order in backend database...</div>';
 
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/orders/track?order_id=${encodeURIComponent(query)}`);
+      const res = await fetch(`${API_BASE_URL}/orders/track?order_id=${encodeURIComponent(query)}`);
       const json = await res.json();
       if (json.success && json.order) {
         const o = json.order;
@@ -1898,7 +1898,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Dynamically Hydrate from Live Backend API
     if (catalogGrid) {
-      fetch('http://127.0.0.1:8000/api/products')
+      fetch(`${API_BASE_URL}/products`)
         .then(res => res.ok ? res.json() : null)
         .then(json => {
           if (!json || !json.success || !Array.isArray(json.data) || json.data.length === 0) return;
@@ -1910,13 +1910,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const origPrice = prod.original_price ? `<span class="spice-price-original">₹${Math.round(prod.original_price)}</span>` : '';
             const notes = (prod.notes || '100% Pure Indian Spice').replace(/"/g, '&quot;');
             const desc = (prod.description || prod.subtitle || '').replace(/"/g, '&quot;');
-            const cleanImg = prod.image || 'assets/step_01_sourced.png';
+            const cleanImg = prod.image || 'assets/magicbland.png';
             const priceVal = Math.round(prod.price);
             const pId = prod.id || `${prod.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${prod.weight}`;
             const pSlug = prod.slug || pId;
 
             return `
-              <article class="spice-card" data-category="${prod.category_slug}" data-name="${prod.name}" data-weight="${prod.weight}" data-price="${priceVal}" data-image="${cleanImg}" data-id="${pId}">
+              <article class="spice-card" data-category="${prod.category_slug || 'blends'}" data-name="${prod.name}" data-weight="${prod.weight || '250g'}" data-price="${priceVal}" data-image="${cleanImg}" data-id="${pId}">
                 <div class="spice-card-visual">
                   ${badgeHtml}
                   <button type="button" class="btn-quickview-icon" aria-label="Quick View ${prod.name}"
@@ -1925,18 +1925,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     data-img="${cleanImg}"
                     data-notes="${notes}"
                     data-price="${priceVal}"
-                    data-weight="${prod.weight}">
+                    data-weight="${prod.weight || '250g'}">
                     🔍
                   </button>
                   <a href="product-details.html?id=${pSlug}" class="spice-img-link" aria-label="View ${prod.name} details">
-                    <img src="${cleanImg}" alt="${prod.name}" class="spice-card-img" loading="lazy">
+                    <img src="${cleanImg}" alt="${prod.name}" class="spice-card-img" loading="lazy" onerror="this.onerror=null; this.src='assets/magicbland.png';">
                   </a>
                 </div>
 
                 <div class="spice-card-body">
                   <div class="spice-meta-top">
-                    <span class="spice-category-tag">${prod.category}</span>
-                    <span class="spice-weight-tag">${prod.weight}</span>
+                    <span class="spice-category-tag">${prod.category || 'Blended Spices'}</span>
+                    <span class="spice-weight-tag">${prod.weight || '250g'}</span>
                   </div>
                   <h2 class="spice-card-title">
                     <a href="product-details.html?id=${pSlug}">${prod.name}</a>
@@ -1970,6 +1970,10 @@ document.addEventListener('DOMContentLoaded', () => {
               </article>
             `;
           }).join('');
+
+          // Update Category Tab Count (e.g. All Spices (11))
+          const allPill = document.querySelector('.filter-pill-btn[data-category="all"]');
+          if (allPill) allPill.textContent = `All Spices (${products.length})`;
 
           // Re-attach card events and filter
           attachCardEvents();
@@ -2438,7 +2442,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Always fetch live backend API first to reflect latest admin changes
-    fetch(`http://127.0.0.1:8000/api/products/${prodId}`)
+    fetch(`${API_BASE_URL}/products/${prodId}`)
       .then(res => res.ok ? res.json() : null)
       .then(json => {
         if (json && json.success && json.data) {
@@ -2478,7 +2482,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const countEl = document.getElementById('pdp-reviews-count');
       if (!listEl) return;
 
-      fetch(`http://127.0.0.1:8000/api/products/${targetId}/reviews`)
+      fetch(`${API_BASE_URL}/products/${targetId}/reviews`)
         .then(res => res.json())
         .then(json => {
           if (json.success && json.reviews) {
@@ -2527,7 +2531,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const comment = document.getElementById('review-comment').value.trim();
 
       try {
-        const res = await fetch(`http://127.0.0.1:8000/api/products/${prodId}/reviews`, {
+        const res = await fetch(`${API_BASE_URL}/products/${prodId}/reviews`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name, rating, title, comment })
