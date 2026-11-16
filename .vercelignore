@@ -1,0 +1,6 @@
+# Ignore backend directory from Vercel frontend deployment
+backend/
+.git/
+.vscode/
+scratch/
+*.md
