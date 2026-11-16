@@ -1,0 +1,7 @@
+# Render Static Site Rewrites
+/products          /products.html          200
+/product-details   /product-details.html   200
+/about             /about.html             200
+/quality           /quality.html           200
+/inspiration       /inspiration.html       200
+/contact           /contact.html           200
